@@ -1,0 +1,108 @@
+@import "./animations.css";
+@import "./mixins.css";
+@import "./overrides.css";
+@import "./variables.css";
+
+#root #introduction {
+	flex-direction: unset;
+}
+
+#root #introduction .introduction-container .content {
+	margin: 3rem auto 2rem auto;
+}
+
+#root #introduction .introduction-container .content .title {
+	color: var(--foreground-primary);
+}
+
+#root #about .about-container .about-description {
+	color: var(--foreground-primary);
+	font-size: 18px;
+	font-weight: normal;
+}
+
+#root #about .about-container .tech-stack span,
+#root #about .about-container .tech-stack svg,
+#root #about .about-container .tech-stack i {
+	display: inline-block;
+	vertical-align: middle;
+}
+
+#root #about .about-container .tech-stack svg,
+#root #about .about-container .tech-stack i {
+	width: 36px;
+	height: 36px;
+	padding: 4px;
+	display: inline-block;
+	vertical-align: middle;
+}
+
+#root #about .about-container .tech-stack svg *,
+#root #about .about-container .tech-stack i * {
+	width: 36px;
+	height: 36px;
+}
+
+#root #about .about-container .columns {
+	padding: 12px 0px 12px 0px;
+}
+
+#root #about .about-container .columns h6 {
+	color: var(--accent);
+	text-align: center;
+}
+
+#root #about .about-container .columns .column {
+	text-align: center;
+}
+
+#root #about .about-container .columns .column .btn-alt {
+	font-weight: bold;
+	background-color: transparent;
+	color: var(--foreground-primary);
+}
+
+#root #about .about-container .columns .column .btn-alt {
+	border-radius: 4px;
+	background-color: var(--background-primary);
+}
+
+#root #about .about-container .columns .column .btn-alt {
+	border: none !important;
+	margin: 3px !important;
+}
+
+#root #about .about-container .columns .column .btn-alt:hover,
+#root #about .about-container .columns .column .btn-alt:focus {
+	color: var(--foreground-primary);
+	transform: translateX(0.5rem);
+}
+
+#root #about .about-container h1 {
+	color: inherit !important;
+	font-size: 36px !important;
+	border-bottom: var(--accent) solid 4px;
+	display: inline-block;
+}
+
+#root #projects {
+	background-color: var(--background-secondary);
+	padding: 6rem 1.5rem;
+	transform: skewY(-3deg);
+}
+
+#root #projects .projects-container {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	transform: skewY(3deg);
+}
+
+#root #projects .projects-container h1 {
+	color: inherit !important;
+	font-size: 36px;
+	font-weight: bold;
+	align-items: center;
+	margin-bottom: 1rem;
+}

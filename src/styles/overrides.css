@@ -1,0 +1,137 @@
+@import "./variables.css";
+
+.app {
+	font-family: "Poppins", sans-serif !important;
+	font-weight: 300;
+	background-color: var(--background-primary) !important;
+	color: var(--foreground-primary) !important;
+}
+
+a {
+	color: var(--accent);
+	transition: 0.3s ease-in-out;
+}
+
+a:hover,
+a:focus {
+	color: var(--accent) !important;
+}
+
+h3 {
+	color: var(--foreground-primary) !important;
+}
+
+ul,
+ol {
+	list-style: square !important;
+}
+
+@media only screen and (max-width: 600px) {
+	ul,
+	ol {
+		list-style: none !important;
+		margin: 0px !important;
+	}
+}
+
+/* BULMA OVERRIDES */
+.button {
+	color: var(--foreground-primary);
+	background-color: transparent;
+	border: 2px solid var(--background-secondary-alt);
+	margin: 6px !important;
+	transition: 0.4s;
+}
+
+.button span {
+	padding-left: 0.5rem;
+}
+
+.button:hover,
+.button:focus {
+	border-color: var(--accent);
+	color: inherit;
+}
+
+.content {
+	text-align: left;
+	font-size: 18px;
+	width: 100%;
+}
+
+.card {
+	color: var(--foreground-primary);
+	background-color: var(--background-primary);
+	border-radius: 6px;
+	margin: 1rem 0.3rem;
+	width: 400px;
+	animation: scale-in 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+}
+
+@media only screen and (max-width: 600px) {
+	.card {
+		width: 340px !important;
+	}
+}
+
+.card-content .repo-title {
+	font-weight: bold;
+}
+
+.card-content .repo-description {
+	font-size: 14px;
+}
+
+.navbar {
+	background-color: var(--background-primary);
+}
+
+.navbar .navbar-brand,
+.navbar .navbar-menu,
+.navbar .navbar-burger,
+.navbar .navbar-item {
+	margin: 12px 8px;
+	background-color: var(--background-primary);
+	color: var(--foreground-primary);
+}
+
+.navbar .navbar-start {
+	flex-grow: 1;
+	justify-content: center;
+}
+
+.navbar .navbar-start .navbar-item,
+.navbar .navbar-center .navbar-item,
+.navbar .navbar-end .navbar-item {
+	background: none;
+	margin: 0px 12px;
+	border-bottom: 3px solid transparent;
+	transition: 0.3s ease-in-out;
+}
+
+.navbar .navbar-start .navbar-item:hover,
+.navbar .navbar-start .navbar-item:focus,
+.navbar .navbar-center .navbar-item:hover,
+.navbar .navbar-center .navbar-item:focus,
+.navbar .navbar-end .navbar-item:hover,
+.navbar .navbar-end .navbar-item:focus {
+	color: var(--foreground-primary);
+	border-color: var(--accent);
+}
+
+.navbar .navbar-start .is-icon {
+	margin: 0px 4px !important;
+}
+
+.navbar .navbar-start .is-icon .is-hidden-desktop {
+	margin: 0px 8px !important;
+}
+
+.footer {
+	background-color: var(--background-primary);
+	padding: 4rem !important;
+}
+
+.footer p {
+	font-size: 16px;
+}

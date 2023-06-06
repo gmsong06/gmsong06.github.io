@@ -1,0 +1,36 @@
+/* Reference: https://github.com/LichKing112/portfolio/blob/126ad94fd13d2e532ac60d4582464191fcbbfb9b/src/styles/_mixins.scss#L3 */
+
+/* extra_small_devices */
+@media only screen and (max-width: 600px) {
+	/* @content */
+}
+
+/* small_devices */
+@media only screen and (min-width: 600px) {
+	/* @content */
+}
+
+/* medium_devices */
+@media only screen and (max-width: 768px) {
+	/* @content */
+}
+
+/* large_devices */
+@media only screen and (min-width: 992px) {
+	/* @content */
+}
+
+/* extra_large_devices */
+@media only screen and (min-width: 1200px) {
+	/* @content */
+}
+
+/* potrait_tablet */
+@media only screen and (min-width: 361px) {
+	/* @content */
+}
+
+/* landscape_tablet */
+@media only screen and (min-width: 768px) {
+	/* @content */
+}
