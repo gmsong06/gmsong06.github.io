@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/static/css/main.b12cfcad.css",
-    "main.js": "/static/js/main.5e4c55f3.js",
+    "main.js": "/static/js/main.618dd5ff.js",
     "static/media/TheRuler.png": "/static/media/TheRuler.4a0f7a643698047e3823.png",
     "static/media/HealersOfDestruction.png": "/static/media/HealersOfDestruction.4db9ab4bb32bec6a046d.png",
     "static/media/ad.jpg": "/static/media/ad.332ab4863ab16d64512b.jpg",
@@ -11,10 +11,10 @@
     "static/media/CV.pdf": "/static/media/CV.3354fe4e744665ca501b.pdf",
     "index.html": "/index.html",
     "main.b12cfcad.css.map": "/static/css/main.b12cfcad.css.map",
-    "main.5e4c55f3.js.map": "/static/js/main.5e4c55f3.js.map"
+    "main.618dd5ff.js.map": "/static/js/main.618dd5ff.js.map"
   },
   "entrypoints": [
     "static/css/main.b12cfcad.css",
-    "static/js/main.5e4c55f3.js"
+    "static/js/main.618dd5ff.js"
   ]
 }
