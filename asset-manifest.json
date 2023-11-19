@@ -1,17 +1,20 @@
 {
   "files": {
-    "main.css": "/static/css/main.3df74091.css",
-    "main.js": "/static/js/main.8b339f7b.js",
+    "main.css": "/static/css/main.b12cfcad.css",
+    "main.js": "/static/js/main.0edfae62.js",
+    "static/media/TheRuler.png": "/static/media/TheRuler.4a0f7a643698047e3823.png",
+    "static/media/HealersOfDestruction.png": "/static/media/HealersOfDestruction.4db9ab4bb32bec6a046d.png",
     "static/media/ad.jpg": "/static/media/ad.332ab4863ab16d64512b.jpg",
     "static/media/sorostem.png": "/static/media/sorostem.f62efe290febedf7dd26.png",
+    "static/media/TheShineOfAutumn.png": "/static/media/TheShineOfAutumn.0b7c401e8f9cf3f841d6.png",
     "static/media/me.jpg": "/static/media/me.b7490cc0a87dac62fc0a.jpg",
     "static/media/CV.pdf": "/static/media/CV.3354fe4e744665ca501b.pdf",
     "index.html": "/index.html",
-    "main.3df74091.css.map": "/static/css/main.3df74091.css.map",
-    "main.8b339f7b.js.map": "/static/js/main.8b339f7b.js.map"
+    "main.b12cfcad.css.map": "/static/css/main.b12cfcad.css.map",
+    "main.0edfae62.js.map": "/static/js/main.0edfae62.js.map"
   },
   "entrypoints": [
-    "static/css/main.3df74091.css",
-    "static/js/main.8b339f7b.js"
+    "static/css/main.b12cfcad.css",
+    "static/js/main.0edfae62.js"
   ]
 }
