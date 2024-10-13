@@ -1,22 +1,22 @@
 {
   "files": {
     "main.css": "/static/css/main.b12cfcad.css",
-    "main.js": "/static/js/main.bb0f8d4f.js",
+    "main.js": "/static/js/main.e06f67d5.js",
     "static/media/TheRuler.png": "/static/media/TheRuler.4a0f7a643698047e3823.png",
     "static/media/HealersOfDestruction.png": "/static/media/HealersOfDestruction.4db9ab4bb32bec6a046d.png",
     "static/media/ad.jpg": "/static/media/ad.332ab4863ab16d64512b.jpg",
     "static/media/sorostem.png": "/static/media/sorostem.f62efe290febedf7dd26.png",
     "static/media/TheShineOfAutumn.png": "/static/media/TheShineOfAutumn.0b7c401e8f9cf3f841d6.png",
-    "static/media/me.jpg": "/static/media/me.b7490cc0a87dac62fc0a.jpg",
     "static/media/android.jpg": "/static/media/android.234f31d3018dccf02d93.jpg",
-    "static/media/CV.pdf": "/static/media/CV.ad51f5fd515e5b599a36.pdf",
+    "static/media/me.PNG": "/static/media/me.7e485e8ca5ea8615ade2.PNG",
+    "static/media/CV.pdf": "/static/media/CV.15379eaad09f4a2729f2.pdf",
     "static/media/courses.png": "/static/media/courses.26fabfb6a8fae662f174.png",
     "index.html": "/index.html",
     "main.b12cfcad.css.map": "/static/css/main.b12cfcad.css.map",
-    "main.bb0f8d4f.js.map": "/static/js/main.bb0f8d4f.js.map"
+    "main.e06f67d5.js.map": "/static/js/main.e06f67d5.js.map"
   },
   "entrypoints": [
     "static/css/main.b12cfcad.css",
-    "static/js/main.bb0f8d4f.js"
+    "static/js/main.e06f67d5.js"
   ]
 }
