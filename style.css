@@ -1,0 +1,243 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --bg: #fff;
+  --text: #111;
+  --muted: #666;
+  --link: #444;
+  --border: #ddd;
+  --last-edited: #999;
+}
+
+[data-theme="dark"] {
+  --bg: #111;
+  --text: #ccc;
+  --muted: #777;
+  --link: #999;
+  --border: #2e2e2e;
+  --last-edited: #555;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text);
+  background: var(--bg);
+  padding: 60px 20px;
+  transition: background 0.15s, color 0.15s;
+}
+
+.container {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+nav {
+  display: flex;
+  align-items: center;
+  margin-bottom: 50px;
+}
+
+nav a {
+  color: var(--text);
+  text-decoration: none;
+  margin-right: 20px;
+}
+
+nav a:hover {
+  text-decoration: underline;
+}
+
+nav a.name {
+  font-weight: 600;
+  margin-right: 40px;
+}
+
+.theme-toggle {
+  margin-left: auto;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.icon-sun,
+.icon-moon {
+  color: var(--muted);
+  flex-shrink: 0;
+  transition: color 0.15s;
+}
+
+[data-theme="light"] .icon-sun,
+:root:not([data-theme="dark"]) .icon-sun { color: var(--text); }
+[data-theme="dark"] .icon-moon { color: var(--text); }
+
+.toggle-track {
+  width: 30px;
+  height: 17px;
+  background: #ccc;
+  border-radius: 999px;
+  position: relative;
+  transition: background 0.2s;
+  flex-shrink: 0;
+}
+
+.toggle-thumb {
+  width: 13px;
+  height: 13px;
+  background: #fff;
+  border-radius: 50%;
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  transition: transform 0.2s;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+[data-theme="dark"] .toggle-track {
+  background: #555;
+}
+
+[data-theme="dark"] .toggle-thumb {
+  transform: translateX(13px);
+}
+
+p {
+  margin-bottom: 16px;
+}
+
+a {
+  color: var(--link);
+  text-decoration: underline;
+}
+
+a:hover {
+  color: var(--text);
+}
+
+.links {
+  margin-bottom: 30px;
+}
+
+.links a {
+  margin-right: 8px;
+}
+
+hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 30px 0;
+}
+
+h1 {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+h2 {
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+.subtext {
+  font-weight: 400;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.subtext a {
+  color: var(--link);
+}
+
+/* experience */
+
+.experience-item {
+  margin-bottom: 20px;
+}
+
+.experience-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.experience-date {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.experience-org {
+  color: var(--muted);
+  font-size: 13px;
+  margin-bottom: 4px;
+}
+
+.experience-item ul {
+  margin-top: 4px;
+  padding-left: 20px;
+}
+
+.experience-item li {
+  margin-bottom: 4px;
+}
+
+/* projects */
+
+.project-item {
+  margin-bottom: 16px;
+}
+
+.project-links {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.project-links a {
+  color: var(--link);
+}
+
+/* collections */
+
+.book-item,
+.music-item,
+.film-item,
+.tool-item {
+  margin-bottom: 16px;
+}
+
+.collapsible {
+  margin-top: 8px;
+}
+
+.collapsible summary {
+  cursor: pointer;
+  color: var(--muted);
+  font-size: 14px;
+  margin-bottom: 14px;
+}
+
+.collapsible summary:hover {
+  color: var(--text);
+}
+
+.collapsible-content {
+  margin-top: 16px;
+}
+
+/* footer */
+
+.last-edited {
+  margin-top: 60px;
+  color: var(--last-edited);
+  font-size: 12px;
+}
