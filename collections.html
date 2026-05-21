@@ -23,23 +23,31 @@
 
             <h1>Collections</h1>
 
-            <p>
-                Hi, I'm Ann. I'm a CS student who loves building things at the
-                intersection of software and design.
-            </p>
+            <div class="card-grid">
+                <div class="card" data-collection="crochet">
+                    <div class="card-title">Crochet</div>
+                </div>
 
-            <p>
-                I care about making software that feels intuitive and human.
-                When I'm not coding, I'm probably reading, sketching, or going
-                on long walks with good music.
-            </p>
-
-            <p>
-                Feel free to reach out at
-                <a href="mailto:gmsong1978@gmail.com">gmsong1978@gmail.com</a>.
-            </p>
+                <div class="card" data-collection="apples">
+                    <div class="card-title">Apples</div>
+                </div>
+            </div>
 
             <p class="last-edited">Last Updated: May 2026</p>
+        </div>
+
+        <div class="modal-overlay" id="modal-overlay">
+            <div class="modal">
+                <button class="modal-close" id="modal-close">✕</button>
+                <div class="modal-title" id="modal-title"></div>
+                <input class="modal-search" id="modal-search" placeholder="Search..." autocomplete="off" />
+                <div class="modal-sort" id="modal-sort"></div>
+<div class="modal-body" id="modal-body"></div>
+            </div>
+        </div>
+
+        <div class="lightbox" id="lightbox">
+            <img class="lightbox-img" id="lightbox-img" src="" alt="" />
         </div>
     </body>
 </html>
