@@ -4,7 +4,27 @@
   const theme = stored || 'dark';
   document.documentElement.setAttribute('data-theme', theme);
 
+  function injectNav() {
+    const nav = document.getElementById('site-nav');
+    if (!nav) return;
+    const depth = (location.pathname.match(/\//g) || []).length - 1;
+    const root = depth > 0 ? '../'.repeat(depth) : '';
+    nav.innerHTML = `
+      <a href="${root}index.html" class="name">Ann Song</a>
+      <a href="${root}projects.html">Projects</a>
+      <a href="${root}collections.html">Collections</a>
+      <a href="${root}thoughts.html">Thoughts</a>
+      <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">
+        <svg class="icon-sun" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="13" height="13"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+        <span class="toggle-track"><span class="toggle-thumb"></span></span>
+        <svg class="icon-moon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="13" height="13"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
+    `;
+  }
+
   document.addEventListener('DOMContentLoaded', function () {
+    injectNav();
+
     // theme toggle
     const btn = document.getElementById('theme-toggle');
     if (btn) {
@@ -60,15 +80,15 @@
           { label: 'Date', col: 'date' },
         ],
         items: [
-          { name: 'Strawberry Cow',       images: [], description: 'A little green frog made with DK weight yarn. My first amigurumi.', date: '2023-03-15' },
-          { name: 'Mouse in a Teacup',    images: [], description: 'WIP — using leftover yarn scraps in earthy tones.', date: '2023-07-20' },
-          { name: 'Cheeseburger',         images: [], description: 'Made in a weekend. Cream colored cotton yarn.', date: '2023-10-08' },
-          { name: 'Pink Cupcake',         images: [], description: 'Market bag in a wavy stitch pattern. Holds a surprising amount.', date: '2024-01-14' },
-          { name: 'Elephant',             images: [], description: 'Quick little gift. Uses seed beads for texture.', date: '2024-04-22' },
-          { name: 'Bear with Bucket Hat', images: [], description: 'About 3 inches tall. Lives on my desk.', date: '2024-08-05' },
-          { name: 'Christmas Bunny',      images: [], description: 'About 3 inches tall. Lives on my desk.', date: '2024-11-30' },
-          { name: 'Strawberry Cat Plant', images: [], description: 'About 3 inches tall. Lives on my desk.', date: '2025-02-10' },
-          { name: 'Peppa Pig',            images: [], description: 'About 3 inches tall. Lives on my desk.', date: '2025-04-28' },
+          { name: 'Strawberry Cow',       assets: [], description: 'A little green frog made with DK weight yarn. My first amigurumi.', date: '2023-03-15' },
+          { name: 'Mouse in a Teacup',    assets: [], description: 'WIP — using leftover yarn scraps in earthy tones.', date: '2023-07-20' },
+          { name: 'Cheeseburger',         assets: [], description: 'Made in a weekend. Cream colored cotton yarn.', date: '2023-10-08' },
+          { name: 'Pink Cupcake',         assets: [], description: 'Market bag in a wavy stitch pattern. Holds a surprising amount.', date: '2024-01-14' },
+          { name: 'Elephant',             assets: [], description: 'Quick little gift. Uses seed beads for texture.', date: '2024-04-22' },
+          { name: 'Bear with Bucket Hat', assets: [], description: 'About 3 inches tall. Lives on my desk.', date: '2024-08-05' },
+          { name: 'Christmas Bunny',      assets: [], description: 'About 3 inches tall. Lives on my desk.', date: '2024-11-30' },
+          { name: 'Strawberry Cat Plant', assets: [], description: 'About 3 inches tall. Lives on my desk.', date: '2025-02-10' },
+          { name: 'Peppa Pig',            assets: [], description: 'About 3 inches tall. Lives on my desk.', date: '2025-04-28' },
         ]
       },
       apples: {
@@ -84,21 +104,21 @@
         ],
         columns: ['Variety', 'Sweetness', 'Tartness', 'Intensity', 'Crunch', 'Rating'],
         rows: [
-          { image: 'images/apples/fuji.jpeg', cells: ['Fuji', 4.5, 2, 3.5, 4, '8/10'] },
-          { image: 'images/apples/gala.jpeg', cells: ['Gala', 3, 0, 2, 3, '7/10'] },
-          { image: 'images/apples/golden_delicious.jpeg', cells: ['Golden Delicious', 3.5, 3.5, 4, 2, '8/10'] },
-          { image: 'images/apples/cortland.jpeg', cells: ['Cortland', 2, 2, 2.5, 1, '7/10'] },
-          { image: 'images/apples/mcintosh.jpeg', cells: ['McIntosh', 2, 3.5, 3, 0, '5/10'] },
-          { image: 'images/apples/sugarbee.jpeg', cells: ['Sugarbee', 5, 0, 4, 5, '10/10'] },
-          { image: 'images/apples/pink_lady.jpeg', cells: ['Pink Lady', 4, 2, 4, 4.5, '8.5/10'] },
-          { image: 'images/apples/granny_smith.jpeg', cells: ['Granny Smith', 0, 5, 4, 3.5, '4/10'] },
-          { image: 'images/apples/cosmic_crisp.jpeg', cells: ['Cosmic Crisp', 3.5, 0, 1, 5, '8.3/10'] },
-          { image: 'images/apples/honeycrisp.jpeg', cells: ['Honeycrisp', 3, 1, 3, 3, '7/10'] },
-          { image: 'images/apples/envy.jpeg', cells: ['Envy', 4.5, 1, 4.5, 4, '9.5/10'] },
-          { image: 'images/apples/cherry_apple.jpeg', cells: ['Cherry Apple', 0, 4, 0, 0, '1/10'] },
-          { image: 'images/apples/opal.jpeg', cells: ['Opal', 4.5, 0, 4.5, 1, '8.5/10'] },
-          { image: 'images/apples/sweetango.jpeg', cells: ['SweeTango', 2.5, 3, 2.5, 4, '7/10'] },
-          { image: 'images/apples/juici.jpeg', cells: ['Juici', 2, 0, 1, 1, '5/10'] },
+          { image: 'assets/apples/fuji.jpeg', cells: ['Fuji', 4.5, 2, 3.5, 4, '8/10'] },
+          { image: 'assets/apples/gala.jpeg', cells: ['Gala', 3, 0, 2, 3, '7/10'] },
+          { image: 'assets/apples/golden_delicious.jpeg', cells: ['Golden Delicious', 3.5, 3.5, 4, 2, '8/10'] },
+          { image: 'assets/apples/cortland.jpeg', cells: ['Cortland', 2, 2, 2.5, 1, '7/10'] },
+          { image: 'assets/apples/mcintosh.jpeg', cells: ['McIntosh', 2, 3.5, 3, 0, '5/10'] },
+          { image: 'assets/apples/sugarbee.jpeg', cells: ['Sugarbee', 5, 0, 4, 5, '10/10'] },
+          { image: 'assets/apples/pink_lady.jpeg', cells: ['Pink Lady', 4, 2, 4, 4.5, '8.5/10'] },
+          { image: 'assets/apples/granny_smith.jpeg', cells: ['Granny Smith', 0, 5, 4, 3.5, '4/10'] },
+          { image: 'assets/apples/cosmic_crisp.jpeg', cells: ['Cosmic Crisp', 3.5, 0, 1, 5, '8.3/10'] },
+          { image: 'assets/apples/honeycrisp.jpeg', cells: ['Honeycrisp', 3, 1, 3, 3, '7/10'] },
+          { image: 'assets/apples/envy.jpeg', cells: ['Envy', 4.5, 1, 4.5, 4, '9.5/10'] },
+          { image: 'assets/apples/cherry_apple.jpeg', cells: ['Cherry Apple', 0, 4, 0, 0, '1/10'] },
+          { image: 'assets/apples/opal.jpeg', cells: ['Opal', 4.5, 0, 4.5, 1, '8.5/10'] },
+          { image: 'assets/apples/sweetango.jpeg', cells: ['SweeTango', 2.5, 3, 2.5, 4, '7/10'] },
+          { image: 'assets/apples/juici.jpeg', cells: ['Juici', 2, 0, 1, 1, '5/10'] },
         ]
       }
     };
@@ -158,8 +178,8 @@
       return div;
     }
 
-    function makeCarousel(images, className, alt) {
-      const valid = (images || []).filter(Boolean);
+    function makeCarousel(assets, className, alt) {
+      const valid = (assets || []).filter(Boolean);
       if (valid.length === 0) {
         const div = document.createElement('div');
         div.className = className;
@@ -226,7 +246,7 @@
         items.forEach(function (item) {
           const el = document.createElement('div');
           el.className = 'modal-project';
-          el.appendChild(makeCarousel(item.images, 'modal-project-img', item.name));
+          el.appendChild(makeCarousel(item.assets, 'modal-project-img', item.name));
           const info = document.createElement('div');
           info.className = 'modal-project-info';
           const dateHtml = item.date ? `<div class="modal-project-date">${formatDate(item.date)}</div>` : '';

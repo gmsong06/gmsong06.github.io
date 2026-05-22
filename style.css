@@ -762,6 +762,29 @@ a.listening-title:hover {
   content: '· ';
 }
 
+/* project log */
+
+.log-media {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.log-media img,
+.log-media video {
+    height: 180px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    object-fit: cover;
+    background: var(--border);
+}
+
+.log-media video {
+    width: auto;
+    max-width: 100%;
+}
+
 /* footer */
 
 .last-edited {
