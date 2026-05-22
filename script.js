@@ -339,7 +339,7 @@
 
     if (searchInput) searchInput.addEventListener('input', renderContent);
 
-    document.querySelectorAll('.card[data-collection]').forEach(function (card) {
+    document.querySelectorAll('[data-collection]').forEach(function (card) {
       card.addEventListener('click', function () { openModal(card.dataset.collection); });
     });
 
