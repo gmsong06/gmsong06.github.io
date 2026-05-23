@@ -25,6 +25,19 @@
   document.addEventListener('DOMContentLoaded', function () {
     injectNav();
 
+    // back to top button
+    const topBtn = document.createElement('button');
+    topBtn.className = 'back-to-top';
+    topBtn.setAttribute('aria-label', 'Back to top');
+    topBtn.textContent = '↑';
+    document.body.appendChild(topBtn);
+    window.addEventListener('scroll', function () {
+      topBtn.classList.toggle('visible', window.scrollY > 300);
+    });
+    topBtn.addEventListener('click', function () {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
     // theme toggle
     const btn = document.getElementById('theme-toggle');
     if (btn) {

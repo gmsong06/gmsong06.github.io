@@ -12,29 +12,69 @@
             <nav id="site-nav"></nav>
 
             <h1>Robot Learning on SO-ARM101</h1>
-
+            <p>
+                Hey there! This is ongoing documentation of my process learning physical AI on the SO-ARM101.
+            </p>
+            
             <div class="project-item">
                 <span class="project-links">[<a href="#">GitHub</a>] [<a href="#">Demo</a>]</span><br />
-                Short description of what this project does and what you learned building it.
             </div>
 
             <hr />
 
+            <h2>Todo</h2>
+            <ul class="todo-list">
+                <li>Implement FAIL-Detect paper on imitation policy</li>
+                <li>Train initial imitation policy</li>
+                <li>Record 50 episodes</li>
+            </ul>
+
+            <hr />
+
             <h2>Log</h2>
-            <div class="project-item">
-                <strong>May 21, 2026</strong><br />
-                Set up robot environment.
-                <div class="log-media">
-                    <!-- <img src="images/so_arm101/may21-setup.jpg" alt="robot setup" /> -->
-                    <!-- <video src="images/so_arm101/may21-demo.mp4" controls></video> -->
+
+            <div class="log-nav">
+                <a class="log-nav-item" href="#log-052226">May 22</a>
+                <a class="log-nav-item" href="#log-052126">May 21</a>
+                <a class="log-nav-item" href="#log-052026">May 20</a>
+            </div>
+
+            <div class="log-entry" id="log-052226">
+                <div class="log-date">May 22, 2026</div>
+                <div class="log-body">
+                    <p>I started recording episodes today. Started by recording five episodes only to find that the parquet file kept on getting corrupted.
+                    Then for some reason it just started not getting corrupted? Happy to announce I was not able to reproduce the issue, so if after the 50
+                    episodes I plan to record tomorrow end with a corrupted file, then wow that would be unfortunate.</p>
+                    <div class="log-media">
+                        <video src="../assets/so_arm101/052226_cam.mp4" controls></video>
+                    </div>
+                    <p>After recording 7 times and <b>green-block4</b>, <b>green-block5</b>,
+                    and <b>green-block6</b> showing no corruption, I decided to call it a day.</p>
+                    <div class="log-media">
+                        <img src="../assets/so_arm101/052226_hf.png" alt="My huggingface profile lol" />
+                    </div>
                 </div>
             </div>
-            <div class="project-item">
-                <strong>May 20, 2026</strong><br />
-                Set up follower and leader arms and got teleop working.
-                <div class="log-media">
-                    <!-- <img src="images/so_arm101/may20-arms.jpg" alt="follower and leader arms" /> -->
-                    <!-- <video src="images/so_arm101/may20-teleop.mp4" controls></video> -->
+
+            <div class="log-entry" id="log-052126">
+                <div class="log-date">May 21, 2026</div>
+                <div class="log-body">
+                    <p>Set up robot environment.</p>
+                    <ul>
+                        <li>Lighting</li>
+                        <li>Block and container</li>
+                        <li>Cameras (gripper USB camera and laptop)</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="log-entry" id="log-052026">
+                <div class="log-date">May 20, 2026</div>
+                <div class="log-body">
+                    <p>Calibrated follower and leader arms and got teleop working.</p>
+                    <div class="log-media">
+                        <video src="../assets/so_arm101/052026.MP4" controls></video>
+                    </div>
                 </div>
             </div>
 
