@@ -132,6 +132,7 @@
           { image: 'assets/apples/opal.jpeg', cells: ['Opal', 4.5, 0, 4.5, 1, '8.5/10'] },
           { image: 'assets/apples/sweetango.jpeg', cells: ['SweeTango', 2.5, 3, 2.5, 4, '7/10'] },
           { image: 'assets/apples/juici.jpeg', cells: ['Juici', 2, 0, 1, 1, '5/10'] },
+          { image: 'assets/apples/royal_gala.png', cells: ['Royal Gala', 3, 0, 2, 3, '7/10'] },
         ]
       }
     };
