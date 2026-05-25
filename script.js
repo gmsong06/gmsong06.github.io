@@ -158,6 +158,7 @@
           { image: 'assets/apples/juici.jpeg', cells: ['Juici', 2, 0, 1, 1, 2, '5/10'] },
           { image: 'assets/apples/royal_gala.png', cells: ['Royal Gala', 3, 0, 2, 3, 2.5, '7/10'] },
           { image: 'assets/apples/kanzi.png', cells: ['Kanzi', 1.5, 4, 4.5, 3, 5, '7/10'] },
+          { image: 'assets/apples/wild_twist.png', cells: ['Wild Twist', 4.5, 0, 3, 5, 4.5, '9.5/10'] },
         ]
       }
     };
@@ -305,7 +306,11 @@
             if (col === 0) return a.cells[0].localeCompare(b.cells[0]) * sortState.dir;
             const av = col === 6 ? parseRating(a.cells[col]) : parseFloat(a.cells[col]) || 0;
             const bv = col === 6 ? parseRating(b.cells[col]) : parseFloat(b.cells[col]) || 0;
-            return (av - bv) * sortState.dir;
+            const primary = (av - bv) * sortState.dir;
+            if (primary !== 0) return primary;
+            if (col === 1) return parseFloat(a.cells[2]) - parseFloat(b.cells[2]); // sweetness tie: least tart first
+            if (col === 2) return parseFloat(b.cells[1]) - parseFloat(a.cells[1]); // tartness tie: most sweet first
+            return primary;
           });
         }
         const wrapper = document.createElement('div');
