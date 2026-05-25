@@ -22,8 +22,26 @@
     `;
   }
 
+  function generateLogNav() {
+    const nav = document.querySelector('.log-nav');
+    if (!nav) return;
+    const entries = document.querySelectorAll('.log-entry[id]');
+    if (!entries.length) return;
+    nav.innerHTML = '';
+    entries.forEach(function (entry) {
+      const dateEl = entry.querySelector('.log-date');
+      const label = dateEl ? dateEl.textContent.replace(/,?\s*\d{4}$/, '').trim() : entry.id;
+      const a = document.createElement('a');
+      a.className = 'log-nav-item';
+      a.href = '#' + entry.id;
+      a.textContent = label;
+      nav.appendChild(a);
+    });
+  }
+
   document.addEventListener('DOMContentLoaded', function () {
     injectNav();
+    generateLogNav();
 
     // back to top button
     const topBtn = document.createElement('button');
@@ -88,20 +106,25 @@
       crochet: {
         type: 'projects',
         title: 'Crochet',
+        defaultSort: { col: 'date', dir: -1 },
         sortOptions: [
           { label: 'A–Z', col: 'name' },
           { label: 'Date', col: 'date' },
         ],
         items: [
-          { name: 'Strawberry Cow',       assets: [], description: 'A little green frog made with DK weight yarn. My first amigurumi.', date: '2023-03-15' },
-          { name: 'Mouse in a Teacup',    assets: [], description: 'WIP — using leftover yarn scraps in earthy tones.', date: '2023-07-20' },
-          { name: 'Cheeseburger',         assets: [], description: 'Made in a weekend. Cream colored cotton yarn.', date: '2023-10-08' },
-          { name: 'Pink Cupcake',         assets: [], description: 'Market bag in a wavy stitch pattern. Holds a surprising amount.', date: '2024-01-14' },
-          { name: 'Elephant',             assets: [], description: 'Quick little gift. Uses seed beads for texture.', date: '2024-04-22' },
-          { name: 'Bear with Bucket Hat', assets: [], description: 'About 3 inches tall. Lives on my desk.', date: '2024-08-05' },
-          { name: 'Christmas Bunny',      assets: [], description: 'About 3 inches tall. Lives on my desk.', date: '2024-11-30' },
-          { name: 'Strawberry Cat Plant', assets: [], description: 'About 3 inches tall. Lives on my desk.', date: '2025-02-10' },
-          { name: 'Peppa Pig',            assets: [], description: 'About 3 inches tall. Lives on my desk.', date: '2025-04-28' },
+          { name: 'Two Starter Ducks',       assets: ['assets/crochet/first_ducks.png'], description: 'My first ever crochet projects! I started crocheting around this time because I was very stressed junior year of high school and over winter break I randomly decided to buy a crochet kit. I gifted the one on the right went to my dad and the left to my mom.', date: '2024-01-14' },
+          { name: 'Bunny',       assets: ['assets/crochet/small_bunny.png'], description: 'One of my earliest projects with chunky yarn. A little messy, but I was starting to get the hang of crochet I think lol', date: '2024-03-06' },
+          { name: 'Strawberry Cow',       assets: ['assets/crochet/strawberry_cow.jpg'], description: 'My first amigurumi with proper limbs. My mom said it looks like a pig, but it is definitely a cow trust.', date: '2024-03-15' },
+          { name: 'Popping Teacup Mouse',    assets: ['assets/crochet/mouse_teacup.jpg'], description: 'I saw the most clever concept of a popping mouse out of a teacup and had to make it', date: '2025-02-24' },
+          { name: 'Purple Snoopy',    assets: ['assets/crochet/purple_snoopy.png'], description: 'A birthday gift for my friend who loves everything purple and Snoopy', date: '2026-01-17' },
+          { name: 'Cheeseburger',         assets: ['assets/crochet/cheeseburger.jpg'], description: 'I had a food crochet phase for a bit. This cheeseburger actually took quite a bit of layering.', date: '2024-07-08' },
+          { name: 'Pink Cupcake',         assets: ['assets/crochet/pink_cupcake.jpg'], description: 'I think I literally made this in a couple hours randomly at 12am because after I finished the cheeseburger I wanted to make more food.', date: '2024-07-08' },
+          { name: 'Elephant',             assets: ['assets/crochet/elephant.jpg'], description: 'Quick little gift. Uses seed beads for texture.', date: '2024-04-22' },
+          { name: 'Bear with Bucket Hat', assets: ['assets/crochet/bear_bucket_hat.png'], description: "A father's day gift for my dad! It was supposed to be a bear with a coffee cup, but the yarn was too flimsy to keep the cup shape, so I turned it into a bucket hat lol", date: '2025-06-15' },
+          { name: 'Christmas Bunny',      assets: ['assets/crochet/christmas_bunny.png'], description: 'I was in the Christmas spirit after getting into college', date: '2024-12-20' },
+          { name: 'Strawberry Cat Plant', assets: ['assets/crochet/cat_strawberry.png', 'assets/crochet/cat_strawberry2.png', 'assets/crochet/cat_strawberry3.png'], description: 'One of my more involved crochet pieces in a while. The individual seeds and little strawberries, were tough, but it has become one of my favorite projects.', date: '2026-03-16' },
+          { name: 'Fat Pig',            assets: ['assets/crochet/fat_pig.png', 'assets/crochet/fat_pig2.png'], description: "Idk why I made this lol I just wanted to make a chubby pig, but when I went back to college after spring break, my mom places it on my bed because my zodiac's a pig.", date: '2026-03-21' },
+          { name: 'Broccoli',            assets: ['assets/crochet/broccoli.png', 'assets/crochet/broccoli2.png'], description: "A birthday gift for my friend who loves eating a broccoli head raw", date: '2026-04-22' },
         ]
       },
       apples: {
@@ -113,26 +136,28 @@
           { label: 'Tartness', col: '2' },
           { label: 'Intensity', col: '3' },
           { label: 'Crunch', col: '4' },
-          { label: 'Rating', col: '5' },
+          { label: 'Juiciness', col: '5' },
+          { label: 'Rating', col: '6' },
         ],
-        columns: ['Variety', 'Sweetness', 'Tartness', 'Intensity', 'Crunch', 'Rating'],
+        columns: ['Variety', 'Sweetness', 'Tartness', 'Intensity', 'Crunch', 'Juiciness', 'Rating'],
         rows: [
-          { image: 'assets/apples/fuji.jpeg', cells: ['Fuji', 4.5, 2, 3.5, 4, '8/10'] },
-          { image: 'assets/apples/gala.jpeg', cells: ['Gala', 3, 0, 2, 3, '7/10'] },
-          { image: 'assets/apples/golden_delicious.jpeg', cells: ['Golden Delicious', 3.5, 3.5, 4, 2, '8/10'] },
-          { image: 'assets/apples/cortland.jpeg', cells: ['Cortland', 2, 2, 2.5, 1, '7/10'] },
-          { image: 'assets/apples/mcintosh.jpeg', cells: ['McIntosh', 2, 3.5, 3, 0, '5/10'] },
-          { image: 'assets/apples/sugarbee.jpeg', cells: ['Sugarbee', 5, 0, 4, 5, '10/10'] },
-          { image: 'assets/apples/pink_lady.jpeg', cells: ['Pink Lady', 4, 2, 4, 4.5, '8.5/10'] },
-          { image: 'assets/apples/granny_smith.jpeg', cells: ['Granny Smith', 0, 5, 4, 3.5, '4/10'] },
-          { image: 'assets/apples/cosmic_crisp.jpeg', cells: ['Cosmic Crisp', 3.5, 0, 1, 5, '8.3/10'] },
-          { image: 'assets/apples/honeycrisp.jpeg', cells: ['Honeycrisp', 3, 1, 3, 3, '7/10'] },
-          { image: 'assets/apples/envy.jpeg', cells: ['Envy', 4.5, 1, 4.5, 4, '9.5/10'] },
-          { image: 'assets/apples/cherry_apple.jpeg', cells: ['Cherry Apple', 0, 4, 0, 0, '1/10'] },
-          { image: 'assets/apples/opal.jpeg', cells: ['Opal', 4.5, 0, 4.5, 1, '8.5/10'] },
-          { image: 'assets/apples/sweetango.jpeg', cells: ['SweeTango', 2.5, 3, 2.5, 4, '7/10'] },
-          { image: 'assets/apples/juici.jpeg', cells: ['Juici', 2, 0, 1, 1, '5/10'] },
-          { image: 'assets/apples/royal_gala.png', cells: ['Royal Gala', 3, 0, 2, 3, '7/10'] },
+          { image: 'assets/apples/fuji.jpeg', cells: ['Fuji', 4.5, 2, 3.5, 4, 2.5, '8/10'] },
+          { image: 'assets/apples/gala.jpeg', cells: ['Gala', 3, 0, 2, 3, 3.5, '7/10'] },
+          { image: 'assets/apples/golden_delicious.jpeg', cells: ['Golden Delicious', 3.5, 3.5, 4, 2, 3, '8/10'] },
+          { image: 'assets/apples/cortland.jpeg', cells: ['Cortland', 2, 2, 2.5, 1, 2, '7/10'] },
+          { image: 'assets/apples/mcintosh.jpeg', cells: ['McIntosh', 2, 3.5, 3, 0, 1.5, '5/10'] },
+          { image: 'assets/apples/sugarbee.jpeg', cells: ['Sugarbee', 5, 0, 4, 5, 5, '10/10'] },
+          { image: 'assets/apples/pink_lady.jpeg', cells: ['Pink Lady', 4, 2, 4, 4.5, 4.5, '8.5/10'] },
+          { image: 'assets/apples/granny_smith.jpeg', cells: ['Granny Smith', 0, 5, 4, 3.5, 3.5, '4/10'] },
+          { image: 'assets/apples/cosmic_crisp.jpeg', cells: ['Cosmic Crisp', 3.5, 0, 1, 5, 4.5, '8.3/10'] },
+          { image: 'assets/apples/honeycrisp.jpeg', cells: ['Honeycrisp', 3, 1, 3, 3, 3, '7/10'] },
+          { image: 'assets/apples/envy.jpeg', cells: ['Envy', 4.5, 1, 4.5, 4, 4, '9.5/10'] },
+          { image: 'assets/apples/cherry_apple.jpeg', cells: ['Cherry Apple', 0, 4, 0, 0, 1, '1/10'] },
+          { image: 'assets/apples/opal.jpeg', cells: ['Opal', 4.5, 0, 4.5, 1, 3, '8.5/10'] },
+          { image: 'assets/apples/sweetango.jpeg', cells: ['SweeTango', 2.5, 3, 2.5, 4, 2.5, '7/10'] },
+          { image: 'assets/apples/juici.jpeg', cells: ['Juici', 2, 0, 1, 1, 2, '5/10'] },
+          { image: 'assets/apples/royal_gala.png', cells: ['Royal Gala', 3, 0, 2, 3, 2.5, '7/10'] },
+          { image: 'assets/apples/kanzi.png', cells: ['Kanzi', 1.5, 4, 4.5, 3, 5, '7/10'] },
         ]
       }
     };
@@ -156,7 +181,7 @@
       return d.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
     }
 
-    var STAR_COLS = [1, 2, 3, 4]; // Sweetness, Tartness, Intensity, Crunch
+    var STAR_COLS = [1, 2, 3, 4, 5]; // Sweetness, Tartness, Intensity, Crunch, Juiciness
 
     function renderStars(val) {
       val = parseFloat(val) || 0;
@@ -278,8 +303,8 @@
           const col = parseInt(sortState.col);
           rows = rows.slice().sort(function (a, b) {
             if (col === 0) return a.cells[0].localeCompare(b.cells[0]) * sortState.dir;
-            const av = col === 5 ? parseRating(a.cells[col]) : parseFloat(a.cells[col]) || 0;
-            const bv = col === 5 ? parseRating(b.cells[col]) : parseFloat(b.cells[col]) || 0;
+            const av = col === 6 ? parseRating(a.cells[col]) : parseFloat(a.cells[col]) || 0;
+            const bv = col === 6 ? parseRating(b.cells[col]) : parseFloat(b.cells[col]) || 0;
             return (av - bv) * sortState.dir;
           });
         }
@@ -346,8 +371,8 @@
       if (!data || !overlay) return;
       currentKey = key;
       const opts = data.sortOptions || [];
-      const firstCol = opts.length ? opts[0].col : null;
-      sortState = { col: firstCol, dir: 1 };
+      const def = data.defaultSort || (opts.length ? { col: opts[0].col, dir: 1 } : { col: null, dir: 1 });
+      sortState = { col: def.col, dir: def.dir };
       if (searchInput) searchInput.value = '';
       if (sortControls) {
         sortControls.innerHTML = '<span class="sort-label">Sort by</span>';
@@ -361,8 +386,8 @@
           sortControls.appendChild(btn);
         });
         sortControls.style.display = opts.length ? 'flex' : 'none';
-        const firstBtn = sortControls.querySelector('.sort-btn');
-        if (firstBtn) { firstBtn.classList.add('active'); firstBtn.textContent = firstBtn.dataset.label + ' ▲'; }
+        const activeBtn = sortControls.querySelector('.sort-btn[data-col="' + def.col + '"]');
+        if (activeBtn) { activeBtn.classList.add('active'); activeBtn.textContent = activeBtn.dataset.label + (def.dir === -1 ? ' ▼' : ' ▲'); }
       }
       modalTitle.textContent = data.title;
       overlay.classList.remove('closing');

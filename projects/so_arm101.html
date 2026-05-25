@@ -25,19 +25,54 @@
             <h2>Todo</h2>
             <ul class="todo-list">
                 <li>Implement FAIL-Detect paper on imitation policy</li>
-                <li>Train initial imitation policy</li>
             </ul>
 
             <hr />
 
             <h2>Log</h2>
 
-            <div class="log-nav">
-                <a class="log-nav-item" href="#log-052226">May 22</a>
-                <a class="log-nav-item" href="#log-052126">May 21</a>
-                <a class="log-nav-item" href="#log-052026">May 20</a>
+            <div class="log-nav"></div>
+            <div class="log-entry" id="log-052426">
+                <div class="log-date">May 24, 2026</div>
+                <div class="log-body">
+                    <p>I trained an ACT policy today with imitation learning on Google Colab. After paying Google to use the NVIDIA GPUs, 
+                        it actually trained quite quickly. Now the hard part came when I started evaluating this model with rollouts.
+                        I started with in distribution locations, so I wrote a script to run rollouts 50 times with the 5 positions
+                        I trained the model on.
+                    </p>
+                    <a target="_blank" href="https://huggingface.co/datasets/annsong/rollout_green-block-blue-bin">
+                        50 rollout episodes on HF
+                    </a>
+                    <p>
+                        The success rates of these 5 locations range from 100% to 10%. I suspected the issue to be low quality data, and indeed
+                        as I was writing down notes on why each rollout failed, I saw many similarities in what the robot struggled with to what
+                        I also struggle with when training. The robot consistently failed to bend its wrist enough or move the gripper far enough forward before grasping. 
+                        Coincidentally, I also tend to undershoot those motions when controlling the arm myself! This is sarcasm, I know I'm the problem.
+                        The positions I personally find awkward to pick up were also the positions the policy struggled with most.
+                    </p>
+                    <p>
+                        Perhaps naive of me, but I didn't think I'd have to train myself to pick up a block and place it in a bin before training the robot
+                        to do so as well.
+                    </p>
+                    <p>
+                        Another interesting thing was how consistent the failures were. The robot often 
+                        failed in almost the exact same way every rollout. Slightly wrong wrist angles or grasp 
+                        positions would push the block out of place, and once the robot drifted away from states 
+                        it saw during training, the rollout usually collapsed pretty quickly.
+                    </p>
+                    <a target="_blank" href="https://docs.google.com/spreadsheets/d/1_lpv__KJnmbJjAAhhV3lVSTQ4KW7nEbTlCIIi7KVPFE/edit?usp=sharing">
+                        My rollout data and observations
+                    </a>
+                    <p>
+                        Tomorrow will involve more practice with teleop and then recording a new dataset. I haven't tested out of distribution block positions,
+                        but I don't think there's a point until I get in distribution positions working well.
+                    </p>
+                    <div class="log-media">
+                        <video src="../assets/so_arm101/052426.mp4" controls></video>
+                    </div>
+                </div>
             </div>
-            <div class="log-entry" id="log-052226">
+            <div class="log-entry" id="log-052326">
                 <div class="log-date">May 23, 2026</div>
                 <div class="log-body">
                     <p>So nothing was corrupted today! I recorded 50 episodes of picking up a green block and 
