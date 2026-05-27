@@ -125,6 +125,7 @@
           { name: 'Strawberry Cat Plant', assets: ['assets/crochet/cat_strawberry.png', 'assets/crochet/cat_strawberry2.png', 'assets/crochet/cat_strawberry3.png'], description: 'One of my more involved crochet pieces in a while. The individual seeds and little strawberries, were tough, but it has become one of my favorite projects.', date: '2026-03-16' },
           { name: 'Fat Pig',            assets: ['assets/crochet/fat_pig.png', 'assets/crochet/fat_pig2.png'], description: "Idk why I made this lol I just wanted to make a chubby pig, but when I went back to college after spring break, my mom places it on my bed because my zodiac's a pig.", date: '2026-03-21' },
           { name: 'Broccoli',            assets: ['assets/crochet/broccoli.png', 'assets/crochet/broccoli2.png'], description: "A birthday gift for my friend who loves eating a broccoli head raw", date: '2026-04-22' },
+          { name: 'Garfield',            assets: ['assets/crochet/garfield.jpg'], description: "Halfway through I got confused if I was making Garfield or the Lorax", date: '2026-05-25' },
         ]
       },
       apples: {
