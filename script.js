@@ -25,7 +25,18 @@
   function generateLogNav() {
     const nav = document.querySelector('.log-nav');
     if (!nav) return;
-    const entries = document.querySelectorAll('.log-entry[id]');
+    const activePanel = document.querySelector('.tab-panel.active');
+    const root = activePanel && activePanel.contains(nav) ? activePanel : document;
+    const entries = Array.from(root.querySelectorAll('.log-entry[id]')).sort(function (a, b) {
+      const aDate = a.querySelector('.log-date');
+      const bDate = b.querySelector('.log-date');
+      const aTime = parseLogDate(aDate ? aDate.textContent : '');
+      const bTime = parseLogDate(bDate ? bDate.textContent : '');
+      if (aTime !== null && bTime !== null) return aTime - bTime;
+      if (aTime !== null) return -1;
+      if (bTime !== null) return 1;
+      return 0;
+    });
     if (!entries.length) return;
     nav.innerHTML = '';
     entries.forEach(function (entry) {
@@ -37,10 +48,147 @@
       a.textContent = label;
       nav.appendChild(a);
     });
+    nav.scrollLeft = nav.scrollWidth;
+  }
+
+  function initProjectTabs() {
+    const tabs = document.querySelectorAll('.project-tab[data-tab]');
+    if (!tabs.length) return;
+    tabs.forEach(function (tab) {
+      tab.addEventListener('click', function () {
+        const target = document.getElementById(tab.dataset.tab);
+        if (!target) return;
+        tabs.forEach(function (btn) {
+          btn.classList.toggle('active', btn === tab);
+          btn.setAttribute('aria-selected', btn === tab ? 'true' : 'false');
+        });
+        document.querySelectorAll('.tab-panel').forEach(function (panel) {
+          const active = panel === target;
+          panel.classList.toggle('active', active);
+          panel.hidden = !active;
+        });
+        generateLogNav();
+      });
+    });
+  }
+
+  function escapeHtml(str) {
+    return String(str).replace(/[&<>"']/g, function (ch) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch];
+    });
+  }
+
+  function slugify(str) {
+    return String(str)
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-|-$/g, '') || 'entry';
+  }
+
+  function formatInlineMarkdown(str) {
+    return escapeHtml(str).replace(/\[([^\]]+)\]\(([^)]+)\)/g, function (_, label, href) {
+      return '<a href="' + escapeHtml(href) + '">' + escapeHtml(label) + '</a>';
+    });
+  }
+
+  function parseLogDate(str) {
+    const time = Date.parse(str);
+    return Number.isNaN(time) ? null : time;
+  }
+
+  function renderMarkdownLog(markdown) {
+    const withoutComments = markdown.replace(/<!--[\s\S]*?-->/g, '').trim();
+    if (!withoutComments) return '<p class="log-empty">No log entries yet.</p>';
+    const sections = withoutComments.split(/^##\s+/m).filter(Boolean).map(function (section, index) {
+      const lines = section.trim().split(/\r?\n/);
+      const date = lines.shift().trim();
+      return { date: date, time: parseLogDate(date), lines: lines, index: index };
+    }).sort(function (a, b) {
+      if (a.time !== null && b.time !== null) return b.time - a.time;
+      if (a.time !== null) return -1;
+      if (b.time !== null) return 1;
+      return a.index - b.index;
+    });
+    const seen = {};
+    return sections.map(function (section) {
+      const lines = section.lines;
+      const date = section.date;
+      const idBase = 'log-' + slugify(date);
+      seen[idBase] = (seen[idBase] || 0) + 1;
+      const id = seen[idBase] > 1 ? idBase + '-' + seen[idBase] : idBase;
+      const blocks = [];
+      let paragraph = [];
+
+      function flushParagraph() {
+        if (!paragraph.length) return;
+        blocks.push('<p>' + formatInlineMarkdown(paragraph.join(' ')) + '</p>');
+        paragraph = [];
+      }
+
+      lines.forEach(function (line) {
+        const trimmed = line.trim();
+        const media = trimmed.match(/^!\[([^\]]*)\]\(([^)]+)\)$/);
+        if (!trimmed) {
+          flushParagraph();
+        } else if (media) {
+          flushParagraph();
+          const alt = escapeHtml(media[1]);
+          const src = escapeHtml(media[2]);
+          if (/\.(mp4|webm|mov)$/i.test(src)) {
+            blocks.push('<div class="log-media"><video src="' + src + '" controls></video></div>');
+          } else {
+            blocks.push('<div class="log-media"><img src="' + src + '" alt="' + alt + '" /></div>');
+          }
+        } else {
+          paragraph.push(trimmed);
+        }
+      });
+      flushParagraph();
+
+      return '<div class="log-entry" id="' + id + '"><div class="log-date">' + escapeHtml(date) + '</div><div class="log-body">' + blocks.join('') + '</div></div>';
+    }).join('');
+  }
+
+  function initMarkdownLogs() {
+    document.querySelectorAll('[data-log-src]').forEach(function (el) {
+      fetch(el.dataset.logSrc)
+        .then(function (response) {
+          if (!response.ok) throw new Error('Could not load log');
+          return response.text();
+        })
+        .then(function (markdown) {
+          el.innerHTML = renderMarkdownLog(markdown);
+          generateLogNav();
+        })
+        .catch(function () {
+          el.innerHTML = '<p class="log-empty">Could not load the Markdown log.</p>';
+        });
+    });
+  }
+
+  function initLogTimelineScroll() {
+    document.querySelectorAll('.log-timeline').forEach(function (timeline) {
+      const nav = timeline.querySelector('.log-nav');
+      const prev = timeline.querySelector('.log-scroll-prev');
+      const next = timeline.querySelector('.log-scroll-next');
+      if (!nav) return;
+      if (prev) {
+        prev.addEventListener('click', function () {
+          nav.scrollBy({ left: -260, behavior: 'smooth' });
+        });
+      }
+      if (!next) return;
+      next.addEventListener('click', function () {
+        nav.scrollBy({ left: 260, behavior: 'smooth' });
+      });
+    });
   }
 
   document.addEventListener('DOMContentLoaded', function () {
     injectNav();
+    initProjectTabs();
+    initMarkdownLogs();
+    initLogTimelineScroll();
     generateLogNav();
 
     // back to top button
