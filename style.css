@@ -144,7 +144,7 @@ nav a {
     color: var(--text);
     text-decoration: none;
     margin-right: 20px;
-    transition: color 0.4s;
+    transition: color 0.1s;
 }
 
 nav a:hover {
@@ -225,7 +225,7 @@ p {
 a {
     color: var(--link);
     text-decoration: underline;
-    transition: color 0.4s;
+    transition: color 0.1s;
 }
 
 a:hover {
@@ -421,7 +421,7 @@ h2 {
     padding: 7px 0 8px;
     cursor: pointer;
     text-align: center;
-    transition: color 0.15s, border-color 0.15s;
+    transition: color 0.1s, border-color 0.1s;
 }
 
 .project-tab:hover,
@@ -448,7 +448,7 @@ h2 {
     cursor: pointer;
     color: var(--link);
     text-decoration: underline;
-    transition: color 0.4s;
+    transition: color 0.1s;
 }
 
 .collection-item:hover {
@@ -523,7 +523,7 @@ h2 {
     line-height: 1.4;
     position: relative;
     cursor: pointer;
-    transition: color 0.4s;
+    transition: color 0.1s;
 }
 
 a.listening-title:hover {
@@ -1041,7 +1041,7 @@ a.listening-title:hover {
     border: none;
     padding: 14px 18px 0 0;
     white-space: nowrap;
-    transition: border-color 0.15s, color 0.15s;
+    transition: border-color 0.1s, color 0.1s;
 }
 
 .log-nav-item::after {
@@ -1097,7 +1097,7 @@ a.listening-title:hover {
     font-family: inherit;
     font-size: 15px;
     line-height: 1;
-    transition: border-color 0.15s, color 0.15s;
+    transition: border-color 0.1s, color 0.1s;
 }
 
 .log-scroll-prev {
@@ -1159,14 +1159,89 @@ a.listening-title:hover {
     margin-bottom: 0;
 }
 
+.log-subheading {
+    margin: 18px 0 8px;
+    color: var(--text);
+    line-height: 1.4;
+}
+
+.log-subheading--h3 {
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.log-subheading--h4 {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
 .log-empty {
     color: var(--muted);
 }
 
-.log-body ul {
+.log-body ul,
+.log-body ol {
     padding-left: 20px;
     margin-top: 4px;
+    margin-bottom: 12px;
     line-height: 1.8;
+}
+
+.log-table-wrap {
+    overflow-x: auto;
+    margin: 14px 0 18px;
+}
+
+.log-table {
+    width: 100%;
+    min-width: 680px;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+.log-table th,
+.log-table td {
+    padding: 11px 18px 11px 0;
+    border-bottom: 1px solid var(--border);
+    text-align: left;
+    vertical-align: middle;
+    white-space: nowrap;
+}
+
+.log-table th {
+    color: var(--text);
+    font-weight: 600;
+}
+
+.log-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.log-code {
+    margin: 10px 0 12px;
+    padding: 12px 14px;
+    overflow-x: auto;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: rgba(127, 127, 127, 0.08);
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+.log-code code {
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+}
+
+.log-inline-code {
+    padding: 1px 5px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    background: rgba(127, 127, 127, 0.08);
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+    font-size: 0.9em;
 }
 
 .log-media {
@@ -1175,6 +1250,17 @@ a.listening-title:hover {
     gap: 10px;
     margin-top: 10px;
     margin-bottom: 12px;
+}
+
+.log-media-link {
+    display: block;
+    text-decoration: none;
+    transition: opacity 0.1s, transform 0.1s;
+}
+
+.log-media-link:hover {
+    opacity: 0.82;
+    transform: translateY(-1px);
 }
 
 .log-media img,
@@ -1189,6 +1275,28 @@ a.listening-title:hover {
 .log-media video {
     width: auto;
     max-width: 100%;
+}
+
+.log-media video.is-portrait {
+    height: min(460px, 70vh);
+}
+
+.log-pdf {
+    width: 100%;
+}
+
+.log-pdf iframe {
+    width: 100%;
+    height: min(680px, 78vh);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--border);
+}
+
+.log-pdf a {
+    display: inline-block;
+    margin-top: 6px;
+    font-size: 12px;
 }
 
 /* footer */

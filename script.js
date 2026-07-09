@@ -86,8 +86,32 @@
   }
 
   function formatInlineMarkdown(str) {
-    return escapeHtml(str).replace(/\[([^\]]+)\]\(([^)]+)\)/g, function (_, label, href) {
-      return '<a href="' + escapeHtml(href) + '">' + escapeHtml(label) + '</a>';
+    function formatLinks(text) {
+      return escapeHtml(text).replace(/\[([^\]]+)\]\(([^)]+)\)/g, function (_, label, href) {
+        return '<a href="' + escapeHtml(href) + '">' + escapeHtml(label) + '</a>';
+      });
+    }
+
+    const parts = [];
+    const re = /(`{1,3})([^`\n]+?)\1/g;
+    let last = 0;
+    let match;
+    while ((match = re.exec(str)) !== null) {
+      if (match.index > last) parts.push(formatLinks(str.slice(last, match.index)));
+      parts.push('<code class="log-inline-code">' + escapeHtml(match[2]) + '</code>');
+      last = re.lastIndex;
+    }
+    if (last < str.length) parts.push(formatLinks(str.slice(last)));
+    return parts.join('');
+  }
+
+  function initLogVideos(root) {
+    root.querySelectorAll('.log-media video').forEach(function (video) {
+      function updateOrientation() {
+        video.classList.toggle('is-portrait', video.videoHeight > video.videoWidth);
+      }
+      if (video.readyState >= 1) updateOrientation();
+      video.addEventListener('loadedmetadata', updateOrientation, { once: true });
     });
   }
 
@@ -118,32 +142,143 @@
       const id = seen[idBase] > 1 ? idBase + '-' + seen[idBase] : idBase;
       const blocks = [];
       let paragraph = [];
+      let mediaItems = [];
+      let listItems = [];
+      let listType = null;
+      let listStart = null;
+      let codeLines = [];
+      let inCode = false;
+      let tableRows = [];
 
       function flushParagraph() {
         if (!paragraph.length) return;
+        flushMedia();
+        flushList();
+        flushTable();
         blocks.push('<p>' + formatInlineMarkdown(paragraph.join(' ')) + '</p>');
         paragraph = [];
+      }
+
+      function flushMedia() {
+        if (!mediaItems.length) return;
+        flushList();
+        flushTable();
+        blocks.push('<div class="log-media">' + mediaItems.join('') + '</div>');
+        mediaItems = [];
+      }
+
+      function flushList() {
+        if (!listItems.length) return;
+        const tag = listType === 'ol' ? 'ol' : 'ul';
+        const startAttr = tag === 'ol' && listStart ? ' start="' + listStart + '"' : '';
+        blocks.push('<' + tag + startAttr + '>' + listItems.join('') + '</' + tag + '>');
+        listItems = [];
+        listType = null;
+        listStart = null;
+      }
+
+      function parseTableRow(str) {
+        return str.replace(/^\|/, '').replace(/\|$/, '').split('|').map(function (cell) {
+          return cell.trim();
+        });
+      }
+
+      function isTableSeparator(str) {
+        return parseTableRow(str).every(function (cell) {
+          return /^:?-{3,}:?$/.test(cell);
+        });
+      }
+
+      function flushTable() {
+        if (!tableRows.length) return;
+        const parsedRows = tableRows.map(parseTableRow);
+        const header = parsedRows[0];
+        const bodyRows = parsedRows.slice(isTableSeparator(tableRows[1] || '') ? 2 : 1);
+        const headHtml = header.map(function (cell) {
+          return '<th>' + formatInlineMarkdown(cell) + '</th>';
+        }).join('');
+        const bodyHtml = bodyRows.map(function (row) {
+          return '<tr>' + row.map(function (cell) {
+            return '<td>' + formatInlineMarkdown(cell) + '</td>';
+          }).join('') + '</tr>';
+        }).join('');
+        blocks.push('<div class="log-table-wrap"><table class="log-table"><thead><tr>' + headHtml + '</tr></thead><tbody>' + bodyHtml + '</tbody></table></div>');
+        tableRows = [];
+      }
+
+      function flushCode() {
+        blocks.push('<pre class="log-code"><code>' + escapeHtml(codeLines.join('\n')) + '</code></pre>');
+        codeLines = [];
       }
 
       lines.forEach(function (line) {
         const trimmed = line.trim();
         const media = trimmed.match(/^!\[([^\]]*)\]\(([^)]+)\)$/);
-        if (!trimmed) {
+        const ordered = trimmed.match(/^(\d+)[.)]\s+(.+)$/);
+        const unordered = trimmed.match(/^[-*]\s+(.+)$/);
+        const subheading = trimmed.match(/^(#{3,4})\s+(.+)$/);
+        const table = trimmed.includes('|');
+        if (/^```[A-Za-z0-9_-]*$/.test(trimmed)) {
+          if (inCode) {
+            flushCode();
+            inCode = false;
+          } else {
+            flushParagraph();
+            flushMedia();
+            flushList();
+            inCode = true;
+            codeLines = [];
+          }
+        } else if (inCode) {
+          codeLines.push(line);
+        } else if (subheading) {
           flushParagraph();
+          flushMedia();
+          flushList();
+          flushTable();
+          const level = subheading[1].length;
+          blocks.push('<h' + level + ' class="log-subheading log-subheading--h' + level + '">' + formatInlineMarkdown(subheading[2]) + '</h' + level + '>');
+        } else if (!trimmed) {
+          flushParagraph();
+          flushMedia();
+          flushTable();
         } else if (media) {
           flushParagraph();
           const alt = escapeHtml(media[1]);
           const src = escapeHtml(media[2]);
-          if (/\.(mp4|webm|mov)$/i.test(src)) {
-            blocks.push('<div class="log-media"><video src="' + src + '" controls></video></div>');
+          if (/\.pdf$/i.test(src)) {
+            const label = alt || 'Open PDF';
+            mediaItems.push('<div class="log-pdf"><iframe src="' + src + '" title="' + label + '"></iframe><a href="' + src + '">Open ' + label + '</a></div>');
+          } else if (/\.(mp4|webm|mov)$/i.test(src)) {
+            mediaItems.push('<video src="' + src + '" controls playsinline preload="metadata"></video>');
           } else {
-            blocks.push('<div class="log-media"><img src="' + src + '" alt="' + alt + '" /></div>');
+            mediaItems.push('<a class="log-media-link" href="' + src + '"><img src="' + src + '" alt="' + alt + '" /></a>');
           }
+        } else if (ordered || unordered) {
+          flushParagraph();
+          flushMedia();
+          const nextType = ordered ? 'ol' : 'ul';
+          if (listType && listType !== nextType) flushList();
+          listType = nextType;
+          if (ordered && listStart === null) listStart = ordered[1];
+          listItems.push('<li>' + formatInlineMarkdown(ordered ? ordered[2] : unordered[1]) + '</li>');
+        } else if (table) {
+          flushParagraph();
+          flushMedia();
+          flushList();
+          tableRows.push(trimmed);
         } else {
+          flushMedia();
+          flushList();
+          flushTable();
           paragraph.push(trimmed);
         }
       });
       flushParagraph();
+      flushMedia();
+      flushList();
+      flushTable();
+      if (inCode) flushCode();
 
       return '<div class="log-entry" id="' + id + '"><div class="log-date">' + escapeHtml(date) + '</div><div class="log-body">' + blocks.join('') + '</div></div>';
     }).join('');
@@ -158,6 +293,7 @@
         })
         .then(function (markdown) {
           el.innerHTML = renderMarkdownLog(markdown);
+          initLogVideos(el);
           generateLogNav();
         })
         .catch(function () {
