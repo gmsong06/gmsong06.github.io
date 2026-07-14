@@ -7,6 +7,12 @@ Write progress notes here. Multiple paragraphs are okay.
 
 ![Image caption](../assets/path/to/image.jpg)
 ![Video caption](../assets/path/to/video.mp4)
+
+Inline math: $x = y + z$
+Display math:
+$$
+x = y + z
+$$
 -->
 
 ## June 04, 2026
@@ -392,3 +398,74 @@ The top-view plot shows the full reachable workspace and the practical picking b
 ![Top View Workspace](../assets/projects/tomato/workspace_top_monte_carlo.png)
 
 This is an improvement over my initial camera mount calculation because the old method only aimed the camera at one estimated center point. Now I can show the tomato-picking region is reachable, then use those reachable workspace points to evaluate where the stereo camera should go.
+
+## July 10, 2026
+After those calculations from a couple days ago, we assembled the base today.
+
+![Base 1](../assets/projects/tomato/base1.png)
+![Base 2](../assets/projects/tomato/base2.png)
+
+It's finally able to be clamped down to the table and I can move the arm without clutching the base with the other hand. I looked at the cameras and the angle, height, and distance behind from origin all look great, but I'll need to do more testing tomorrow.
+
+The stereo cameras will also need to be recalibrated because the image rectification doesn't look accurate anymore.
+
+Motors also need to be recalibrated so the zero position has the base rotation the right direction.
+
+## July 11, 2026
+Motors and cameras have been recalibrated. The depth map also looks good. Yes I'm using an apple jellycat as a tomato.
+
+![Disparity Map](../assets/projects/tomato/disparity_map.png)
+
+From my brief testing, the depth calculation from the disparity map also looks pretty accurate. It's around 70cm away from the camera.
+
+Tomorrow I'm planning on building out the rest of the pipeline before eye-to-hand calibration and kinematics:
+
+1. Take ROI from left camera image (from YOLO tomato detection or maybe manual for now idk because I only have an apple jellycat)
+2. Look at the same ROI in the disparity map
+3. Compute the median disparity of the valid pixels
+4. Compute depth in cm
+5. Compute 3d coordinate of the tomato center
+
+## July 12, 2026
+I made my way through the pipeline today.
+
+### ROI
+When I take the ROI from the left camera image, I shrink it by 20%, so I only get the enter of the tomato and not the edges, which would make the depth farther than the surface would be.
+
+### 3D Position Estimation
+
+Once the median disparity is computed, I convert it into depth using the stereo camera model,
+
+\[
+Z = \frac{fB}{d},
+\]
+
+where \(f\) is the focal length, \(B\) is the stereo baseline, and \(d\) is the median disparity. Using the camera intrinsics from the left camera, I then back-project the center of the detection into a 3D point in the left camera frame. This gives the estimated position of the tomato relative to the camera.
+
+
+### Eye-to-hand calibration
+I also did eye-to-hand calibration, which wasn't really calibration or more just math to find a final matrix transformation because I knew where the camera was with respect to the robot origin.
+![Eye-to-hand calibration](../assets/projects/tomato/eye_hand_calibration.pdf)
+
+### Controller Pipeline
+
+With the 3D position available in the robot base frame, I completed the first version of the controller. It synchronizes the ripeness detections with the stereo disparity image, computes the 3D position of every detected tomato, and filters out detections with unreliable disparity estimates. For each valid tomato, it computes the corresponding position in the robot base frame and prepares a simple horizontal approach consisting of pregrasp, contact, and retreat waypoints. So basically each approach has three segments. These waypoints are then passed into the inverse kinematics solver to compute the required joint angles.
+
+### IK
+
+The math of IK is below. I first find the base yaw and then only focus on joint 2 and 3. For joint 4, I'm just assuming I approach horizontally for now to simplify things.
+
+![IK](../assets/projects/tomato/IK.pdf)
+
+Uh so as for the outcome. It's lowk kinda scuffed right now lol
+
+![IK Day 1](../assets/projects/tomato/IK_day1.mov)
+
+Idk we'll debug it tomorrow. Likely issues are
+
+1. Robot thinks tomato is farther than it is
+2. camera to base transformation is wrong
+3. IK is wrong
+4. Contact point is js too aggressive
+5. Controller is commanding center of tomato instead of surface
+6. URDF has issues

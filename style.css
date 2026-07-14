@@ -1244,6 +1244,12 @@ a.listening-title:hover {
     font-size: 0.9em;
 }
 
+.log-body mjx-container[display='true'] {
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 4px 0;
+}
+
 .log-media {
     display: flex;
     flex-wrap: wrap;

@@ -115,6 +115,20 @@
     });
   }
 
+  function typesetMath(root) {
+    if (!root || !window.MathJax) return;
+    const run = function () {
+      if (window.MathJax.typesetPromise) {
+        window.MathJax.typesetPromise([root]).catch(function () {});
+      }
+    };
+    if (window.MathJax.startup && window.MathJax.startup.promise) {
+      window.MathJax.startup.promise.then(run);
+    } else {
+      run();
+    }
+  }
+
   function parseLogDate(str) {
     const time = Date.parse(str);
     return Number.isNaN(time) ? null : time;
@@ -294,6 +308,7 @@
         .then(function (markdown) {
           el.innerHTML = renderMarkdownLog(markdown);
           initLogVideos(el);
+          typesetMath(el);
           generateLogNav();
         })
         .catch(function () {
