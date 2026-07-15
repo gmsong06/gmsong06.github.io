@@ -469,3 +469,51 @@ Idk we'll debug it tomorrow. Likely issues are
 4. Contact point is js too aggressive
 5. Controller is commanding center of tomato instead of surface
 6. URDF has issues
+
+## July 13, 2026
+Lots of debugging today. Yesterday the robot was moving in vaguely the correct direction, but there were enough possible sources of error that I basically went through the whole motion pipeline one piece at a time.
+
+First I checked the URDF geometry. I verified the zero pose, all the link-frame positions, the joint rotation directions, and the new ```tool_tip_link```. With every joint at zero, the tool tip ended up at the expected height:
+
+```
+0.10597 + 0.1778 + 0.1524 + 0.0345 + 0.03193 = 0.50260 m
+```
+
+So the URDF geometry seems fine. I also confirmed that the full wrist-to-suction-tip length is 0.06643 m, not just the 0.0345 m fixed joint that goes to the beginning of the end effector.
+
+Then I checked the analytical IK solver. The actual planar IK math was mostly correct, but the solver was only loading ```joint_5``` from the URDF and was ignoring the additional ```tool_tip_joint```. This meant it thought the tool was 3.193 cm shorter than it actually is, which is lowk a huge issue when trying to touch the tomato surface accurately. That's why I was having issues yesterday with the tomato not being in reach when it was clearly in reach. I updated it so the full tool length is included.
+
+After that I tested the manually defined camera-to-base transform by itself. I published fake points in the left camera optical frame and visualized the camera origin, optical axes, viewing ray, and transformed point in RViz. I checked movements along camera +X, +Y, and +Z, and they all mapped into the expected robot directions. So the basic transform math also seems correct.
+
+The image below is the transformation of the camera point (0, 0, 0.5), basically 50 cm in front of the camera.
+![Transformation Debugging](../assets/projects/tomato/transformation_debugging.png)
+
+Next I tested back-projection using the real rectified CameraInfo. I took a known pixel and depth and converted it into a 3D camera-frame point using:
+
+```
+X = (u - cx)Z / fx
+Y = (v - cy)Z / fy
+Z = depth
+```
+
+I didn't see any issues there, so I just decided to send it lol.
+
+First attempt today:
+![IK Day 2 Attempt 1](../assets/projects/tomato/IK_day2_attempt1.mov)
+
+This looked ok but I started tuning some offsets.
+
+I also found that joint 1 (the base joint) was inverted after this attempt.
+![IK Day 2 Attempt 2](../assets/projects/tomato/IK_day2_attempt2.mov)
+
+After fixing that, I started finding that it was consistently overshooting, so I changed the percentile of disparity to 75, so that it would value the greater disparities (greater disparity means object is closer), so it essentially prioritizes the center of the tomato the most, which is the closest.
+
+Then I started seeing that it was consistently below the tomato with these attempts:
+![IK Day 2 Attempt 3](../assets/projects/tomato/IK_day2_attempt3.MP4)
+![IK Day 2 Attempt 4](../assets/projects/tomato/IK_day2_attempt4.MP4)
+
+At the end, I basically had three offsets for all three axes. This is what we ended the day with (big wait in between first and second execution because I was bypassing safeguards I set up):
+
+![IK Day 2 Attempt 5](../assets/projects/tomato/IK_day2_attempt5.mov)
+
+Pretty happy with the result. I'm slightly concerned with the offsets being specific to this apple jellycat, so we'll have to verify that. I'm gonna print some custom tomatos that are actually accurately sized tomorrow to hopefully have multiple tomatos on the coat rack lol.
