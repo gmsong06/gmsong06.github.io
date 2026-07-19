@@ -517,3 +517,65 @@ At the end, I basically had three offsets for all three axes. This is what we en
 ![IK Day 2 Attempt 5](../assets/projects/tomato/IK_day2_attempt5.mov)
 
 Pretty happy with the result. I'm slightly concerned with the offsets being specific to this apple jellycat, so we'll have to verify that. I'm gonna print some custom tomatos that are actually accurately sized tomorrow to hopefully have multiple tomatos on the coat rack lol.
+
+## July 15, 2026
+I assembled my mock tomato plant today with some questionable looking 3D printed tomatoes.
+
+![3D printed tomatoes](../assets/projects/tomato/3d_printed_tomatoes.png)
+
+Then I assembled them onto a coat rack.
+
+![tomato_tree1](../assets/projects/tomato/tomato_tree1.png)
+
+View from the stereo camera and YOLO detection:
+
+![tomato_tree2](../assets/projects/tomato/tomato_tree2.png)
+![tomato_tree3](../assets/projects/tomato/tomato_tree3.png)
+
+## July 17, 2026
+
+I spent the past couple days expanding the robot from approaching one tomato into an actual multi-tomato harvesting pipeline. This built on the first controller and IK system I had working earlier, where the robot estimated a tomato’s 3D position and generated pregrasp, contact, and retreat waypoints.
+
+The perception system can now detect multiple tomatoes at once and give each one a persistent ID. Originally the detection IDs were regenerated every frame, which made them switch around constantly and made selecting a specific tomato really difficult.
+
+I also expanded the dashboard so I can see all detected tomatoes, their ripeness and confidence, and manually select a reachable tomato by ID.
+
+Once movement is approved, the robot now runs through the full harvesting sequence:
+
+```pregrasp → contact → hold → retreat → return home → resume scanning```
+
+Here is the whole pipeline with the dashboard:
+
+![Dashboard picking](../assets/projects/tomato/dashboard_picking.mp4)
+
+The workflow is basically you select a tomato that's reachable, approve to move end effector to the tomato, retract arm when you're ready and then the controller goes back to scanning reachable tomatoes.
+
+I do find it pretty annoying that some tomatoes are in reach and then the next frame they're not. This is definitely because of some noise in the disparity map of the stereo cameras. Another issue I see is that between tomatoes, it takes a long time to rescan. All possible areas for improvement for sure.
+
+## July 18, 2026
+
+We connected the vacuum end effector to the arm today. 
+
+![Vacuum attachment 2](../assets/projects/tomato/vacuum_attachment2.png)
+<!-- ![Vacuum attachment 1](../assets/projects/tomato/vacuum_attachment.png) -->
+![Vacuum attachment 3](../assets/projects/tomato/vacuum_attachment3.png)
+
+While this was a big step towards an actual working prototype, there were some unexpected consequences of attaching the vacuum. The main problem was that the vacuum tube is inflexible, so the wrist can't bend backwards. The wrist has effectively lost half of its range of motion.
+
+The problem with losing half of its range of motion is that a lot of tomatos that were previously pickable are now deemed as unreachable. An example below:
+
+![Unreachable tomato](../assets/projects/tomato/unreachable_tomato_example.png)
+
+We want the wrist to approach horizontally from the front (perpendicular to the axis of calyx). If the wrist could rotate backwards, it would have a better shot. In general, the new end effector being longer and also having a positive z offset is making a lot of tomatoes unreachable from the current distance from the base. In fact, the max reach of the arm has increased 6 cm from 40cm to around 46cm, so this is not unexpected.
+
+Now the obvious solution is to just move the tomatos farther away and have the pickable area be around 40-50cm instead of 30-40cm as it is right now. However, the problem with that is I did my calculatioins on camera height, pitch, and distance behind base with the initial max reach of 40cm, so if I move it far enough away that more tomatoes are reachable for the arm, the camera can't see them anymore.
+
+We have a few solutions. Either increase camera height, move camera closer to the base, or change camera pitch. Camera pitch is the easiest for us to change, so I set up a simulation in gazebo to try out different angles.
+
+Right now we are at 45 degrees and below is 30 degrees, 35 degrees, and 40 degrees. The tomato plant is 55cm tall and the tallest tomatoes are at around 50cm.
+
+![Camera angle 30](../assets/projects/tomato/camera_angle30.png)
+![Camera angle 35](../assets/projects/tomato/camera_angle35.png)
+![Camera angle 40](../assets/projects/tomato/camera_angle40.png)
+
+35 degrees looks like a nice in between. I'll probably do some calculations tomorrow to confirm, but just visually speaking, 30 degrees captures the entire plant, but the top is kinda unnecessary because the robot can't reach those anyway. 40 degrees obscures some top tomatoes that we might have a shot at, so I think 35 degrees is a good middle ground.
