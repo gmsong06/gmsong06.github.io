@@ -30,8 +30,10 @@
     const entries = Array.from(root.querySelectorAll('.log-entry[id]')).sort(function (a, b) {
       const aDate = a.querySelector('.log-date');
       const bDate = b.querySelector('.log-date');
-      const aTime = parseLogDate(aDate ? aDate.textContent : '');
-      const bTime = parseLogDate(bDate ? bDate.textContent : '');
+      const aText = aDate ? stripMilestoneIcon(aDate.textContent) : '';
+      const bText = bDate ? stripMilestoneIcon(bDate.textContent) : '';
+      const aTime = parseLogDate(aText);
+      const bTime = parseLogDate(bText);
       if (aTime !== null && bTime !== null) return aTime - bTime;
       if (aTime !== null) return -1;
       if (bTime !== null) return 1;
@@ -41,11 +43,22 @@
     nav.innerHTML = '';
     entries.forEach(function (entry) {
       const dateEl = entry.querySelector('.log-date');
-      const label = dateEl ? dateEl.textContent.replace(/,?\s*\d{4}$/, '').trim() : entry.id;
+      const dateText = dateEl ? stripMilestoneIcon(dateEl.textContent) : entry.id;
+      const label = dateText.replace(/,?\s*\d{4}$/, '').trim();
+      const isMilestone = entry.classList.contains('is-milestone');
       const a = document.createElement('a');
-      a.className = 'log-nav-item';
+      a.className = 'log-nav-item' + (isMilestone ? ' is-milestone' : '');
       a.href = '#' + entry.id;
-      a.textContent = label;
+      if (isMilestone) {
+        const icon = document.createElement('span');
+        icon.className = 'log-nav-icon';
+        icon.setAttribute('aria-hidden', 'true');
+        icon.textContent = MILESTONE_ICON;
+        a.appendChild(icon);
+        a.appendChild(document.createTextNode(' ' + label));
+      } else {
+        a.textContent = label;
+      }
       nav.appendChild(a);
     });
     nav.scrollLeft = nav.scrollWidth;
@@ -134,26 +147,88 @@
     return Number.isNaN(time) ? null : time;
   }
 
+  const MILESTONE_ICON = String.fromCodePoint(0x1F345);
+  const MILESTONE_ICON_RE = /^\s*(?:\u2605|\u2606|\u2B50|\uD83C\uDF45)\s*/;
+
+  function stripMilestoneIcon(str) {
+    return String(str).replace(MILESTONE_ICON_RE, '');
+  }
+
+  function milestoneKey(date) {
+    const time = parseLogDate(date);
+    return time === null ? 'text:' + slugify(date) : 'time:' + time;
+  }
+
+  function parseMilestoneLine(line) {
+    const item = line.trim().match(/^[-*]\s+(?:[\u2605\u2606\u2B50]|\uD83C\uDF45)?\s*(.+)$/);
+    if (!item) return null;
+    const months = '(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:t(?:ember)?)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)';
+    const dateMatch = item[1].trim().match(new RegExp('^(' + months + '\\s+\\d{1,2},\\s+\\d{4})(?:\\s*(?:\\u2014|\\u2013|--|-|:)\\s*(.*))?$', 'i'));
+    if (!dateMatch) return null;
+    const date = dateMatch[1];
+    return {
+      date: date,
+      note: (dateMatch[2] || '').trim(),
+      key: milestoneKey(date)
+    };
+  }
+
+  function renderMilestoneSection(milestones, entryByKey) {
+    if (!milestones.length) return '';
+    const items = milestones.map(function (milestone) {
+      const targetId = entryByKey[milestone.key];
+      const dateHtml = targetId
+        ? '<a href="#' + targetId + '">' + escapeHtml(milestone.date) + '</a>'
+        : escapeHtml(milestone.date);
+      const noteHtml = milestone.note
+        ? '<span class="log-milestone-note">' + formatInlineMarkdown(milestone.note) + '</span>'
+        : '';
+      return '<li><span class="log-milestone-icon" aria-hidden="true">' + MILESTONE_ICON + '</span><span><span class="log-milestone-date">' + dateHtml + '</span>' + noteHtml + '</span></li>';
+    }).join('');
+    return '<section class="log-milestones" aria-label="Milestones"><div class="log-milestones-label">Milestones</div><ul class="log-milestone-list">' + items + '</ul></section>';
+  }
+
   function renderMarkdownLog(markdown) {
     const withoutComments = markdown.replace(/<!--[\s\S]*?-->/g, '').trim();
     if (!withoutComments) return '<p class="log-empty">No log entries yet.</p>';
-    const sections = withoutComments.split(/^##\s+/m).filter(Boolean).map(function (section, index) {
+    const milestones = [];
+    const sections = withoutComments.split(/^##\s+/m).filter(Boolean).reduce(function (items, section, index) {
       const lines = section.trim().split(/\r?\n/);
       const date = lines.shift().trim();
-      return { date: date, time: parseLogDate(date), lines: lines, index: index };
-    }).sort(function (a, b) {
+      if (/^milestones$/i.test(date)) {
+        lines.forEach(function (line) {
+          const milestone = parseMilestoneLine(line);
+          if (milestone) milestones.push(milestone);
+        });
+        return items;
+      }
+      items.push({ date: date, time: parseLogDate(date), lines: lines, index: index });
+      return items;
+    }, []).sort(function (a, b) {
       if (a.time !== null && b.time !== null) return b.time - a.time;
       if (a.time !== null) return -1;
       if (b.time !== null) return 1;
       return a.index - b.index;
     });
     const seen = {};
-    return sections.map(function (section) {
+    const entryByKey = {};
+    sections.forEach(function (section) {
+      const idBase = 'log-' + slugify(section.date);
+      seen[idBase] = (seen[idBase] || 0) + 1;
+      section.id = seen[idBase] > 1 ? idBase + '-' + seen[idBase] : idBase;
+      if (section.time !== null && !entryByKey[milestoneKey(section.date)]) {
+        entryByKey[milestoneKey(section.date)] = section.id;
+      }
+    });
+    const milestoneByKey = {};
+    milestones.forEach(function (milestone) {
+      milestoneByKey[milestone.key] = milestone;
+    });
+    return renderMilestoneSection(milestones, entryByKey) + sections.map(function (section) {
       const lines = section.lines;
       const date = section.date;
-      const idBase = 'log-' + slugify(date);
-      seen[idBase] = (seen[idBase] || 0) + 1;
-      const id = seen[idBase] > 1 ? idBase + '-' + seen[idBase] : idBase;
+      const id = section.id;
+      const milestone = milestoneByKey[milestoneKey(date)];
       const blocks = [];
       let paragraph = [];
       let mediaItems = [];
@@ -294,7 +369,10 @@
       flushTable();
       if (inCode) flushCode();
 
-      return '<div class="log-entry" id="' + id + '"><div class="log-date">' + escapeHtml(date) + '</div><div class="log-body">' + blocks.join('') + '</div></div>';
+      const entryClass = 'log-entry' + (milestone ? ' is-milestone' : '');
+      const dateClass = 'log-date' + (milestone ? ' log-date--milestone' : '');
+      const dateLabel = (milestone ? '<span class="log-date-icon" aria-hidden="true">' + MILESTONE_ICON + '</span>' : '') + escapeHtml(date);
+      return '<div class="' + entryClass + '" id="' + id + '"><div class="' + dateClass + '">' + dateLabel + '</div><div class="log-body">' + blocks.join('') + '</div></div>';
     }).join('');
   }
 

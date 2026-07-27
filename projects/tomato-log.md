@@ -13,7 +13,23 @@ Display math:
 $$
 x = y + z
 $$
+
+Mark an important day by adding it to the milestones section:
+
+## Milestones
+- 🍅 Month Day, Year - Short note about why it mattered
+
+The date should match a log entry heading.
 -->
+
+## Milestones
+
+- 🍅 July 25, 2026 - Harvested a real tomato in the field
+- 🍅 July 17, 2026 - Expanded from one tomato into a multi-tomato harvesting workflow.
+- 🍅 July 12, 2026 - Connected stereo depth, eye-to-hand math, controller planning, and IK
+- 🍅 June 26, 2026 - Robot arm assembled
+- 🍅 June 23, 2026 - Robot arm design completed
+- 🍅 June 4, 2026 - Project start
 
 ## June 04, 2026
 
@@ -579,3 +595,89 @@ Right now we are at 45 degrees and below is 30 degrees, 35 degrees, and 40 degre
 ![Camera angle 40](../assets/projects/tomato/camera_angle40.png)
 
 35 degrees looks like a nice in between. I'll probably do some calculations tomorrow to confirm, but just visually speaking, 30 degrees captures the entire plant, but the top is kinda unnecessary because the robot can't reach those anyway. 40 degrees obscures some top tomatoes that we might have a shot at, so I think 35 degrees is a good middle ground.
+
+## July 20, 2026
+A couple of things happened today. First we changed the camera from 45 degrees downwards to 35 degrees. After that, I proceeded to break the arm.
+
+![Broken arm](../assets/projects/tomato/broken_arm.png)
+
+So I think the progress cancels out lol
+
+## July 21, 2026
+
+We fixed the broken arm today and also modified the vacuum so it no longer blocks the wrist's range of motion.
+
+![Vacuum side](../assets/projects/tomato/vacuum_side.png)
+![Vacuum side irl](../assets/projects/tomato/vacuum_side_irl.png)
+
+## July 22, 2026
+
+After some tuning, we've made it back to our baseline last week in terms of moving towards tomatoes autonomously.
+
+![Tomato vacuum working](../assets/projects/tomato/tomato_vacuum_working.MOV)
+
+Still need to do a lot of tuning, but good to feel like I didn't only make negative progres this last week lol.
+
+Right now, the main issues I see is the position relative to the robot origin is in the center of the tomato if the tomato is low, but it is the top 75% of the tomato if the tomato is high. This makes it so that a universal offset for z won't work. Another issue I see is that some tomatoes labeled as not reachable are in fact very reachable, so that needs debugging as well.
+
+## July 25, 2026
+
+We tested on real tomatoes today! Packing up the arm and bringing it into the field made this feel a lot more real ngl.
+
+### Successes:
+- Depth seems reliable when it's tuned at the correct depth range. Cherry tomatoes are smaller than the artificial ones I printed, so there was more room for error
+- Successfully sucked a tomato!
+- Arm is able to approach from a variety of angles
+
+We did have to do a bit of tuning, but the offsets were very minimal.
+
+This was one of the first attempts before any tuning.
+
+![Tomato approach 1](../assets/projects/tomato/tomato_approach1.MOV)
+
+After tuning, approaching at different starting locations:
+
+![Tomato approach 2](../assets/projects/tomato/tomato_approach2.mov)
+![Tomato approach 3](../assets/projects/tomato/tomato_approach3.MOV)
+
+Obviously this was an easy tomato because it's isolated and the calyx dangles at the top, but this is a good start.
+
+In general though:
+
+### Observations:
+- Cherry tomatoes are smaller than my 3D printed ones, so depth error is a little more forgiving
+- Tomatoes tend to grow vertically, so there are not many tomatoes at the height in which I did most of my testing
+- There are many leaf occlusions
+
+### Problems we found:
+
+1. Since tomatoes were higher than usual, there ended up being a trade off between x (forward distance) and depth. Essentially, SGBM tuning was done for a depth of around 60cm - 80cm, but the tomatoes we were going for were around 40-50cm of depth because they were so high up. In order for tomatoes to be in 60cm - 80cm, we would have to go for higher tomatoes, but the arm can't reach that high. My testing didn't have this issue because we simply had lower tomatoes with a greater x, which brought it to the 60cm - 80cm range. One of the main improvements is making SGBM more robust to greater ranges of depth so we don't need to retune on the fly.
+
+This exposed two limitations:
+
+The arm’s vertical workspace does not align well with the natural distribution of tomatoes.
+The current SGBM configuration is not reliable across the full 40–80 cm operating range.
+
+2. The cameras covered a much smaller area than expected, making it difficult to locate tomatoes and observe the surrounding plant. The effective field of view may be limited by the selected camera mode, stereo rectification, projection matrices? Lowk no idea because the camera should see more.
+
+3. Dashboard I made is super slow. I don't know if this is because of the heat? Maybe rosbridge was tweaking? But I ended up needing to send all the commands through terminal to approach and retract the arm, which made figuring out which tomato we were going for very hard.
+
+### Next steps:
+
+1. Build an elevator for the arm and cameras
+
+We're going to build an elevator that raises the arm and stereo cameras together. Moving both on one rigid carriage will shift the tested working volume vertically while preserving the camera-to-arm transform.
+
+Redesigning the arm for substantially greater vertical reach would require larger mechanical, financial, and software changes. Not trying to do all that right now. An elevator is more practical for the current prototype plus we'll need one eventually anyway.
+
+2. Make SGBM reliable across more depths
+
+Additionally, I'm going to figure out how to make the SGBM parameters work for a variety of depths. No idea how yet, but we'll do some research.
+
+3. Camera FOV
+
+I'll probably compare the raw, rectified, and dashboard camera images to determine where the field of view is being lost.
+
+4. Dashboard
+
+Idk yet but it's gotta get less laggy.

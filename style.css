@@ -1075,6 +1075,19 @@ a.listening-title:hover {
     background: var(--accent);
 }
 
+.log-nav-item.is-milestone {
+    color: var(--text);
+}
+
+.log-nav-item.is-milestone::before {
+    background: var(--accent);
+}
+
+.log-nav-icon {
+    color: var(--accent);
+    font-size: 11px;
+}
+
 .log-timeline-label {
     margin-top: 4px;
     color: var(--muted);
@@ -1113,6 +1126,69 @@ a.listening-title:hover {
     color: var(--text);
 }
 
+.log-milestones {
+    margin-bottom: 30px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--border);
+}
+
+.log-milestones-label {
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+}
+
+.log-milestone-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: 8px;
+}
+
+.log-milestone-list li {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    line-height: 1.5;
+}
+
+.log-milestone-icon {
+    flex-shrink: 0;
+    color: var(--accent);
+    font-size: 12px;
+}
+
+.log-milestone-date {
+    margin-right: 6px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.log-milestone-date a {
+    color: var(--text);
+    text-decoration: none;
+    border-bottom: 1px solid var(--border);
+    transition: border-color 0.16s ease, color 0.16s ease;
+}
+
+.log-milestone-date a:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+.log-milestone-note {
+    color: var(--muted);
+}
+
+.log-milestone-note a {
+    color: var(--accent);
+    text-decoration: underline;
+}
+
 .log-entry {
     padding-bottom: 28px;
     margin-bottom: 28px;
@@ -1133,6 +1209,19 @@ a.listening-title:hover {
     text-transform: uppercase;
     letter-spacing: 0.08em;
     margin-bottom: 10px;
+}
+
+.log-date--milestone {
+    color: var(--text);
+}
+
+.log-date-icon {
+    color: var(--accent);
+    display: inline-block;
+    font-size: 11px;
+    letter-spacing: 0;
+    margin-right: 6px;
+    vertical-align: 1px;
 }
 
 .log-body a {
