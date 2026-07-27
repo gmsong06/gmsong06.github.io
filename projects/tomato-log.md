@@ -631,7 +631,7 @@ We tested on real tomatoes today! Packing up the arm and bringing it into the fi
 
 We did have to do a bit of tuning, but the offsets were very minimal.
 
-This was one of the first attempts before any tuning.
+This was one of the first attempts before any tuning (velocity was turned down for testing).
 
 ![Tomato approach 1](../assets/projects/tomato/tomato_approach1.MOV)
 
@@ -639,6 +639,9 @@ After tuning, approaching at different starting locations:
 
 ![Tomato approach 2](../assets/projects/tomato/tomato_approach2.mov)
 ![Tomato approach 3](../assets/projects/tomato/tomato_approach3.MOV)
+
+Here is the arm finally sucking the tomato. It'll be missed.
+![Tomato sucking field](../assets/projects/tomato/tomato_sucking_field.MOV)
 
 Obviously this was an easy tomato because it's isolated and the calyx dangles at the top, but this is a good start.
 
@@ -681,3 +684,56 @@ I'll probably compare the raw, rectified, and dashboard camera images to determi
 4. Dashboard
 
 Idk yet but it's gotta get less laggy.
+
+## July 26, 2026
+I worked on problem 1 and 2 from the field test. So turns out they were both just symptoms of the same problem.
+
+
+### The cameras were only looking at the middle of the sensor
+
+So I was not aware of sensor mode on the cameras, so I never set the mode, so libcamera was picking the smallest one that fit my requested resolution of 640x480. Also asking for a 4:3 image on a 16:9 sensor cropped it again lol it's no wonder the FOV is so bad. Between the two I was throwing away about half the horizontal field before anything else happened.
+
+On top of that, SGBM can't produce depth in a strip along the left edge of the
+image, because the search runs off the side of the other camera's image. That strip
+was over 40% of the frame. So the part of the image that actually had depth was
+tiny, and it was all shoved to one side.
+
+### Autofocus has never actually worked
+
+While setting up to recalibrate I checked what the lens was doing, and the focus
+position never changed. It was at about 33 cm the whole time, so basically
+everything I've ever captured has been out of focus lmao.
+
+Manual focus works fine, so it's the autofocus algorithm and not the hardware.
+I also found the two cameras need different focus commands to be sharp at the same
+distance, so they each get their own value now. Focus is locked permanently, since
+a calibration is only valid at the focus it was taken at. I locked it at around 55 cm.
+
+### Testing three configs
+
+I built a small tool that locks onto a target, logs depth over 50 frames, and
+compares it against a tape measurement. Then I ran the same sweep at a bunch of
+distances for three setups:
+
+- Current — what I took to the field
+- A — low resolution, fast
+- B — medium resolution
+
+| | Current | A | B |
+|---|---|---|---|
+| usable view for depth | very narrow | ~2.5× wider | ~2.5× wider |
+| depth range | 0.4–0.7 m | 0.3–1.3 m | 0.3–1.4 m |
+| accuracy | consistently off by ~4% | good | good |
+| consistency | fine | occasionally very bad | always good |
+| speed | slow | very fast | slow |
+
+
+Going with B. It's slower than I'd like, honestly slower than the old config,
+but I'd rather trust the depth and fix speed as a separate problem. A is still
+available as a launch option since it's much faster if I need it.
+
+![Cam configs](../assets/projects/tomato/cam_configs.png)
+
+I also found that both configs start getting worse at long range because the tomato gets too small in the image for the matching window in SGBM to fit inside it.
+
+So in theoryyy, depth is a lot lot better now but who knows wut it'll be like in a more chaotic environment.
