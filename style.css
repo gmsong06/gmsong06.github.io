@@ -409,6 +409,7 @@ h2 {
     max-width: 620px;
     margin: 0 0 24px;
     border-bottom: 1px solid var(--border);
+    overflow-anchor: none;
 }
 
 .project-tab {
@@ -432,6 +433,10 @@ h2 {
 
 .tab-panel[hidden] {
     display: none;
+}
+
+.tab-panel {
+    overflow-anchor: none;
 }
 
 .project-detail-list {
@@ -1079,13 +1084,17 @@ a.listening-title:hover {
     color: var(--text);
 }
 
-.log-nav-item.is-milestone::before {
-    background: var(--accent);
-}
-
 .log-nav-icon {
     color: var(--accent);
     font-size: 11px;
+}
+
+.log-nav-item.is-active {
+    color: var(--text);
+}
+
+.log-nav-item.is-active::before {
+    background: var(--accent);
 }
 
 .log-timeline-label {
@@ -1190,6 +1199,8 @@ a.listening-title:hover {
 }
 
 .log-entry {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 720px;
     padding-bottom: 28px;
     margin-bottom: 28px;
     border-bottom: 1px solid var(--border);

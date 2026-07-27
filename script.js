@@ -22,9 +22,11 @@
     `;
   }
 
-  function generateLogNav() {
+  function generateLogNav(options) {
+    const force = options && options.force;
     const nav = document.querySelector('.log-nav');
     if (!nav) return;
+    if (!force && nav.dataset.generated === 'true') return;
     const activePanel = document.querySelector('.tab-panel.active');
     const root = activePanel && activePanel.contains(nav) ? activePanel : document;
     const entries = Array.from(root.querySelectorAll('.log-entry[id]')).sort(function (a, b) {
@@ -59,9 +61,76 @@
       } else {
         a.textContent = label;
       }
+      a.addEventListener('click', function () {
+        window.setTimeout(function () {
+          updateActiveLogNav({ force: true });
+        }, 0);
+        window.setTimeout(function () {
+          updateActiveLogNav({ force: true });
+        }, 360);
+      });
       nav.appendChild(a);
     });
+    nav.dataset.generated = 'true';
     nav.scrollLeft = nav.scrollWidth;
+    updateActiveLogNav({ force: true });
+  }
+
+  function logNavRoot(nav) {
+    const activePanel = document.querySelector('.tab-panel.active');
+    return activePanel && activePanel.contains(nav) ? activePanel : document;
+  }
+
+  function keepActiveLogNavItemVisible(nav, item) {
+    const itemLeft = item.offsetLeft;
+    const itemRight = itemLeft + item.offsetWidth;
+    const viewLeft = nav.scrollLeft;
+    const viewRight = viewLeft + nav.clientWidth;
+    if (itemLeft >= viewLeft && itemRight <= viewRight) return;
+    nav.scrollTo({
+      left: itemLeft - (nav.clientWidth - item.offsetWidth) / 2,
+      behavior: 'auto'
+    });
+  }
+
+  function updateActiveLogNav(options) {
+    const force = options && options.force;
+    const nav = document.querySelector('.log-nav');
+    if (!nav || nav.closest('[hidden]')) return;
+    const root = logNavRoot(nav);
+    const entries = Array.from(root.querySelectorAll('.log-entry[id]'));
+    if (!entries.length) return;
+    const timeline = root.querySelector('.log-timeline');
+    const threshold = timeline ? timeline.getBoundingClientRect().bottom + 72 : 160;
+    let activeEntry = entries[0];
+    entries.forEach(function (entry) {
+      if (entry.getBoundingClientRect().top <= threshold) activeEntry = entry;
+    });
+    if (!force && nav.dataset.activeId === activeEntry.id) return;
+    nav.dataset.activeId = activeEntry.id;
+    const activeHref = '#' + activeEntry.id;
+    let activeItem = null;
+    nav.querySelectorAll('.log-nav-item').forEach(function (item) {
+      const isActive = item.getAttribute('href') === activeHref;
+      item.classList.toggle('is-active', isActive);
+      if (isActive) {
+        item.setAttribute('aria-current', 'date');
+        activeItem = item;
+      } else {
+        item.removeAttribute('aria-current');
+      }
+    });
+    if (activeItem) keepActiveLogNavItemVisible(nav, activeItem);
+  }
+
+  let activeLogNavFrame = null;
+
+  function scheduleActiveLogNav() {
+    if (activeLogNavFrame !== null) return;
+    activeLogNavFrame = window.requestAnimationFrame(function () {
+      activeLogNavFrame = null;
+      updateActiveLogNav();
+    });
   }
 
   function initProjectTabs() {
@@ -71,6 +140,9 @@
       tab.addEventListener('click', function () {
         const target = document.getElementById(tab.dataset.tab);
         if (!target) return;
+        if (tab.classList.contains('active')) return;
+        const previousScrollX = window.scrollX;
+        const previousScrollY = window.scrollY;
         tabs.forEach(function (btn) {
           btn.classList.toggle('active', btn === tab);
           btn.setAttribute('aria-selected', btn === tab ? 'true' : 'false');
@@ -80,7 +152,17 @@
           panel.classList.toggle('active', active);
           panel.hidden = !active;
         });
-        generateLogNav();
+        if (target.querySelector('.log-nav')) {
+          window.requestAnimationFrame(function () {
+            generateLogNav();
+            updateActiveLogNav({ force: true });
+            window.scrollTo(previousScrollX, previousScrollY);
+            window.setTimeout(function () {
+              window.scrollTo(previousScrollX, previousScrollY);
+              updateActiveLogNav({ force: true });
+            }, 0);
+          });
+        }
       });
     });
   }
@@ -337,11 +419,11 @@
           const src = escapeHtml(media[2]);
           if (/\.pdf$/i.test(src)) {
             const label = alt || 'Open PDF';
-            mediaItems.push('<div class="log-pdf"><iframe src="' + src + '" title="' + label + '"></iframe><a href="' + src + '">Open ' + label + '</a></div>');
+            mediaItems.push('<div class="log-pdf"><iframe src="' + src + '" title="' + label + '" loading="lazy"></iframe><a href="' + src + '">Open ' + label + '</a></div>');
           } else if (/\.(mp4|webm|mov)$/i.test(src)) {
-            mediaItems.push('<video src="' + src + '" controls playsinline preload="metadata"></video>');
+            mediaItems.push('<video src="' + src + '" controls playsinline preload="none"></video>');
           } else {
-            mediaItems.push('<a class="log-media-link" href="' + src + '"><img src="' + src + '" alt="' + alt + '" /></a>');
+            mediaItems.push('<a class="log-media-link" href="' + src + '"><img src="' + src + '" alt="' + alt + '" loading="lazy" decoding="async" /></a>');
           }
         } else if (ordered || unordered) {
           flushParagraph();
@@ -387,7 +469,8 @@
           el.innerHTML = renderMarkdownLog(markdown);
           initLogVideos(el);
           typesetMath(el);
-          generateLogNav();
+          generateLogNav({ force: true });
+          updateActiveLogNav({ force: true });
         })
         .catch(function () {
           el.innerHTML = '<p class="log-empty">Could not load the Markdown log.</p>';
@@ -419,6 +502,7 @@
     initMarkdownLogs();
     initLogTimelineScroll();
     generateLogNav();
+    updateActiveLogNav({ force: true });
 
     // back to top button
     const topBtn = document.createElement('button');
@@ -428,6 +512,13 @@
     document.body.appendChild(topBtn);
     window.addEventListener('scroll', function () {
       topBtn.classList.toggle('visible', window.scrollY > 300);
+      scheduleActiveLogNav();
+    });
+    window.addEventListener('resize', scheduleActiveLogNav);
+    window.addEventListener('hashchange', function () {
+      window.setTimeout(function () {
+        updateActiveLogNav({ force: true });
+      }, 360);
     });
     topBtn.addEventListener('click', function () {
       window.scrollTo({ top: 0, behavior: 'smooth' });
