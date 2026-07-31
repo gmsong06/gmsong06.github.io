@@ -3,6 +3,7 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex" />
         <title>Tomato Harvester Robot - Ann Song</title>
         <link rel="stylesheet" href="../style.css" />
         <script>
@@ -29,16 +30,16 @@
 
             <h1>Tomato Harvester Robot</h1>
             <p>
-                A custom 4-DOF robot arm that uses stereo vision and imitation learning to identify,
-                approach, and harvest cherry tomatoes.
+                A custom 4-DOF robot arm that uses stereo vision and analytic inverse kinematics to
+                locate cherry tomatoes and pick them with a vacuum end effector.
             </p>
 
-            <div class="project-links">[<a href="#">GitHub</a>]</div>
+            <!-- <div class="project-links">[<a href="#">GitHub</a>]</div> -->
             <div class="project-tech project-tech--detail">
                 <span>Robotics</span>
                 <span>Computer Vision</span>
-                <span>Imitation Learning</span>
-                <span>CAD</span>
+                <span>ROS 2</span>
+                <span>Python</span>
             </div>
 
             <div class="project-guide" aria-label="Guide to the project tabs">
@@ -58,7 +59,7 @@
 
             <div class="project-tabs" role="tablist" aria-label="Tomato project sections">
                 <button class="project-tab active" type="button" role="tab" aria-selected="true" aria-controls="tomato-final" data-tab="tomato-final">
-                    Final Project
+                    Current System
                 </button>
                 <button class="project-tab" type="button" role="tab" aria-selected="false" aria-controls="tomato-process" data-tab="tomato-process">
                     Log
@@ -66,29 +67,45 @@
             </div>
 
             <section class="tab-panel active" id="tomato-final" role="tabpanel">
-                <h2>Final Finished Project</h2>
+                <h2>System Overview</h2>
                 <p>
-                    The finished system combines a compact 4-DOF arm, a tomato-facing perception pipeline,
-                    and learned motion policies for picking small fruit from a cluttered plant setup.
+                    A working prototype that combines a compact 4-DOF arm, a stereo-vision perception
+                    pipeline, closed-form inverse kinematics, and a vacuum (shop-vac) end effector.
                 </p>
+
+                <figure class="project-demo">
+                    <video src="../assets/projects/tomato/tomato_sucking_field.MOV" controls playsinline preload="metadata" poster="../assets/projects/tomato/dashboard.png"></video>
+                    <figcaption>The current system picking cherry tomatoes.</figcaption>
+                </figure>
 
                 <hr />
 
                 <h2>What It Does</h2>
                 <ul class="project-detail-list">
-                    <li>Uses stereo vision to estimate where reachable cherry tomatoes are in 3D space.</li>
-                    <li>Moves a custom arm toward the target while keeping the end effector aligned for harvesting.</li>
-                    <li>Uses imitation learning from demonstration data to make the approach and harvest motion smoother.</li>
-                    <li>Brings together mechanical design, perception, control, and evaluation in one physical robot.</li>
+                    <li>Detects cherry tomatoes with a YOLOv11 model, classifies ripeness, and tracks each fruit with a persistent ID across frames.</li>
+                    <li>Estimates every tomato's 3D position from stereo disparity (SGBM) and a pinhole camera model, then transforms it into the arm's base frame.</li>
+                    <li>Plans a staged straight-line approach (align → pregrasp → contact → retreat → home) and solves it with an analytic 4-DOF inverse-kinematics solver.</li>
+                    <li>Drives the vacuum end effector onto the fruit under a manual select-and-approve workflow, guarded by several independent motor safety limits.</li>
+                    <li>Records and replays hand-demonstrated trajectories as groundwork for planned imitation learning.</li>
                 </ul>
 
                 <hr />
 
-                <h2>Build Notes</h2>
-                <p>
-                    This project was a systems exercise as much as a robotics one: every design choice had to
-                    balance camera placement, reachability, grip geometry, and the messiness of real fruit.
-                </p>
+                <h2>Future Work</h2>
+                <ul class="project-detail-list">
+                    <li>
+                        <b>An elevator for the arm and cameras:</b> Real tomatoes sit higher than the
+                        arm's vertical workspace, which forced picking at a shorter depth than the
+                        stereo pipeline was tuned for. 
+                    </li>
+                    <li>
+                        <b>Full autonomy:</b> Picking currently runs under a manual select-and-approve
+                        workflow.
+                    </li>
+                    <li>
+                        <b>Imitation learning: </b> Integrate an ACT policy with inverse kinematics.
+                    </li>
+                </ul>
             </section>
 
             <section class="tab-panel" id="tomato-process" role="tabpanel" hidden>
@@ -102,7 +119,7 @@
                 <div class="markdown-log" data-log-src="tomato-log.md">Loading log...</div>
             </section>
 
-            <p class="last-edited">Last Updated: May 2026</p>
+            <p class="last-edited">Last Updated: July 31, 2026</p>
         </div>
     </body>
 </html>

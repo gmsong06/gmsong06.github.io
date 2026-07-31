@@ -1387,6 +1387,24 @@ a.listening-title:hover {
     height: min(460px, 70vh);
 }
 
+.project-demo {
+    margin: 18px 0 0;
+}
+
+.project-demo video {
+    width: 100%;
+    max-height: min(520px, 70vh);
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--border);
+}
+
+.project-demo figcaption {
+    color: var(--muted);
+    font-size: 13px;
+    margin-top: 6px;
+}
+
 .log-pdf {
     width: 100%;
 }
