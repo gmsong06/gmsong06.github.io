@@ -147,7 +147,7 @@ Ok I switched up the design of the TomatoDetection Node. I added custom interfac
 
 I got the three nodes communicating with each other. It doesn't look like much, but getting the publishers and subscriptions communicating properly was lowk non-trivial. Turn sound up for video.
 
-![Detection Motor Spin](../assets/projects/tomato/detection_motor_spin.mov)
+![Detection Motor Spin](../assets/projects/tomato/detection_motor_spin.mp4)
 
 ## June 25, 2026
 I wanted to get teleop working for one motor. Teleop's kinda a strong word for this ik. I just made a node called KeyboardControlNode that publishes to ```motor_target_velocities```.
@@ -171,7 +171,7 @@ We assembled the arm today and got basic teleop working. The little red attachme
 
 We calibrated the motors and set the zero position to the arm pointing straight up.
 
-![Initial teleop](../assets/projects/tomato/initial_teleop.mov)
+![Initial teleop](../assets/projects/tomato/initial_teleop.mp4)
 
 ## June 27, 2026
 In preparation for future imitation learning, I worked on a simple record and replay trajectory feature for the arm.
@@ -189,15 +189,15 @@ Replay mode loads the saved trajectory and turns motor torque back on. The repla
 
 The motor node then sends those target positions to the Feetech servos, causing the arm to repeat the demonstrated motion. This gives the robot a basic teach-and-repeat capability that can later be used for collecting imitation learning demonstrations. It also takes in a speed multiplier. The first video shows the recording and replaying process. The second video is the same trajectory, but at 2x speed with replay.
 
-![Record and replay](../assets/projects/tomato/record_replay1.mov)
+![Record and replay](../assets/projects/tomato/record_replay1.mp4)
 
-![Record and replay 2x speed](../assets/projects/tomato/record_replay2.mov)
+![Record and replay 2x speed](../assets/projects/tomato/record_replay2.mp4)
 
 ## June 28, 2026
 I built a custom dashboard for the arm today. I've also been using Foxglove, but I think it'd be nice to have some additinoal functionality. I wanted the ability to control joints and torque through dragging sliders and clicking a button.
 
 ![Dashboard](../assets/projects/tomato/dashboard.png)
-![Dashboard demo](../assets/projects/tomato/dashboard_demo.mov)
+![Dashboard demo](../assets/projects/tomato/dashboard_demo.mp4)
 
 ## June 29, 2026
 I worked on writing a robot description URDF file by describing the links and joints of the arm. It looks pretty good in rviz. Not sure how I'm gonna use the sim right now, but just having the description is pretty good for now.
@@ -475,7 +475,7 @@ The math of IK is below. I first find the base yaw and then only focus on joint 
 
 Uh so as for the outcome. It's lowk kinda scuffed right now lol
 
-![IK Day 1](../assets/projects/tomato/IK_day1.mov)
+![IK Day 1](../assets/projects/tomato/IK_day1.mp4)
 
 Idk we'll debug it tomorrow. Likely issues are
 
@@ -515,22 +515,22 @@ Z = depth
 I didn't see any issues there, so I just decided to send it lol.
 
 First attempt today:
-![IK Day 2 Attempt 1](../assets/projects/tomato/IK_day2_attempt1.mov)
+![IK Day 2 Attempt 1](../assets/projects/tomato/IK_day2_attempt1.mp4)
 
 This looked ok but I started tuning some offsets.
 
 I also found that joint 1 (the base joint) was inverted after this attempt.
-![IK Day 2 Attempt 2](../assets/projects/tomato/IK_day2_attempt2.mov)
+![IK Day 2 Attempt 2](../assets/projects/tomato/IK_day2_attempt2.mp4)
 
 After fixing that, I started finding that it was consistently overshooting, so I changed the percentile of disparity to 75, so that it would value the greater disparities (greater disparity means object is closer), so it essentially prioritizes the center of the tomato the most, which is the closest.
 
 Then I started seeing that it was consistently below the tomato with these attempts:
-![IK Day 2 Attempt 3](../assets/projects/tomato/IK_day2_attempt3.MP4)
-![IK Day 2 Attempt 4](../assets/projects/tomato/IK_day2_attempt4.MP4)
+![IK Day 2 Attempt 3](../assets/projects/tomato/IK_day2_attempt3.mp4)
+![IK Day 2 Attempt 4](../assets/projects/tomato/IK_day2_attempt4.mp4)
 
 At the end, I basically had three offsets for all three axes. This is what we ended the day with (big wait in between first and second execution because I was bypassing safeguards I set up):
 
-![IK Day 2 Attempt 5](../assets/projects/tomato/IK_day2_attempt5.mov)
+![IK Day 2 Attempt 5](../assets/projects/tomato/IK_day2_attempt5.mp4)
 
 Pretty happy with the result. I'm slightly concerned with the offsets being specific to this apple jellycat, so we'll have to verify that. I'm gonna print some custom tomatos that are actually accurately sized tomorrow to hopefully have multiple tomatos on the coat rack lol.
 
@@ -614,7 +614,7 @@ We fixed the broken arm today and also modified the vacuum so it no longer block
 
 After some tuning, we've made it back to our baseline last week in terms of moving towards tomatoes autonomously.
 
-![Tomato vacuum working](../assets/projects/tomato/tomato_vacuum_working.MOV)
+![Tomato vacuum working](../assets/projects/tomato/tomato_vacuum_working.mp4)
 
 Still need to do a lot of tuning, but good to feel like I didn't only make negative progres this last week lol.
 
@@ -633,15 +633,15 @@ We did have to do a bit of tuning, but the offsets were very minimal.
 
 This was one of the first attempts before any tuning (velocity was turned down for testing).
 
-![Tomato approach 1](../assets/projects/tomato/tomato_approach1.MOV)
+![Tomato approach 1](../assets/projects/tomato/tomato_approach1.mp4)
 
 After tuning, approaching at different starting locations:
 
-![Tomato approach 2](../assets/projects/tomato/tomato_approach2.mov)
-![Tomato approach 3](../assets/projects/tomato/tomato_approach3.MOV)
+![Tomato approach 2](../assets/projects/tomato/tomato_approach2.mp4)
+![Tomato approach 3](../assets/projects/tomato/tomato_approach3.mp4)
 
 Here is the arm finally sucking the tomato. It'll be missed.
-![Tomato sucking field](../assets/projects/tomato/tomato_sucking_field.MOV)
+![Tomato sucking field](../assets/projects/tomato/tomato_sucking_field.mp4)
 
 Obviously this was an easy tomato because it's isolated and the calyx dangles at the top, but this is a good start.
 

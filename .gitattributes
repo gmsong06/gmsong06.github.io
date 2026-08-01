@@ -1,7 +1,0 @@
-*.mov filter=lfs diff=lfs merge=lfs -text
-*.mp4 filter=lfs diff=lfs merge=lfs -text
-*.MP4 filter=lfs diff=lfs merge=lfs -text
-*.MOV filter=lfs diff=lfs merge=lfs -text
-assets/projects/tomato/IK_day2_attempt1.mov filter=lfs diff=lfs merge=lfs -text
-assets/projects/tomato/IK_day2_attempt4.MP4 filter=lfs diff=lfs merge=lfs -text
-assets/projects/tomato/IK_day2_attempt5.mov filter=lfs diff=lfs merge=lfs -text
