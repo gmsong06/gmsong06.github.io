@@ -16,6 +16,7 @@ html {
     --border: #ddd;
     --last-edited: #999;
     --accent: #fd73a9;
+    --accent-soft: #ff9ac4;
     --star-empty: #222;
 }
 
@@ -27,6 +28,7 @@ html {
     --border: #2e2e2e;
     --last-edited: #555;
     --accent: #fd73a9;
+    --accent-soft: #ffa8cd;
     --star-empty: #f1eded;
 }
 
@@ -1268,6 +1270,7 @@ a.listening-title:hover {
 .log-subheading--h3 {
     font-size: 14px;
     font-weight: 600;
+    color: var(--accent-soft);
 }
 
 .log-subheading--h4 {

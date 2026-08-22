@@ -24,6 +24,7 @@ The date should match a log entry heading.
 
 ## Milestones
 
+- 🍅 August 20, 2026 - Elevator moving
 - 🍅 July 25, 2026 - Harvested a real tomato in the field
 - 🍅 July 17, 2026 - Expanded from one tomato into a multi-tomato harvesting workflow.
 - 🍅 July 12, 2026 - Connected stereo depth, eye-to-hand math, controller planning, and IK
@@ -737,3 +738,96 @@ available as a launch option since it's much faster if I need it.
 I also found that both configs start getting worse at long range because the tomato gets too small in the image for the matching window in SGBM to fit inside it.
 
 So in theoryyy, depth is a lot lot better now but who knows wut it'll be like in a more chaotic environment.
+## August 20, 2026
+Busy weeks moving in and out of apartments and tracking down metal to build the elevator. Elevator moved, but stepper motor driver dies quickly.
+
+![Elevator moving](../assets/projects/tomato/elevator_moving.MOV)
+
+It's quite difficult to transport, so it'll probably be a while until the arm and elevator are integrated. Since the elevator isn't a unique DOF, the arm and elevator are not modularly distinct, so it's hard to test without integrating them together. Most elevator testing will probably be in simulation because it's so hard to move the elevator to a space where both of us can work on it.
+
+## August 21, 2026
+I decided on a configuration for the wrist camera today. Putting the justification for a wrist camera and rationale below for my own reference:
+
+### Why add wrist camera
+Target confirmation: confirm that the tomato selected by the external stereo system is still in the expected local region that overhead camera said
+
+Visual servoing: measure the target’s image-space error relative to the desired pickup point and command small corrective motions during the final approach.
+
+Compensation for model error: correct residual error from stereo depth noise, extrinsic calibration, servo backlash/compliance, and imperfect kinematics.
+
+There is also future potential for using these two cameras to train an ACT or implement a small VLA.
+
+By visual-servoing, I mean something potentially very simple like setting (u, v) as the observed tomato center and (u*, v*) is the desired image location for the selected approach geometry and then setting e = (u - u*, v - v*).
+
+### Camera selection
+
+Arducam 8MP A219 / IMX219 autofocus USB2 UVC camera, upgraded HDR variant (B029202 family). Putting amazon link [here](https://www.amazon.com/gp/product/B0FLX4T1BY)
+
+We had to go with a USB camera because the Pi's CSI ports are already taken by the Pi cameras and I'm not tryna buy a hat.
+
+ | Property | Value | Notes |
+  |---|---|---|
+  | Interface | USB 2.0 |  |
+  | Sensor | 8MP IMX219 color sensor | Good for detecting warm tomato colors from green leaves |
+  | Resolution Details | 1920x1080 @ 30fps MPJEG | |
+  | Autofocus | 10cm to infinity | I don't think 10cm is an issue? The camera will definitely be able to see way past 10cm like closer to 2cm away from the tomato but I don't think it really matters that it won't be in focus because it's just the color red at the end of the day? |
+  | HFOV | 61 degrees | |
+  | VFOV | 50 degrees | |
+  | Shutter | Rolling | Frankly I don't know enough about the difference to know any of the potential impacts |
+
+### Coordinate definition
+
+| Property | Definition | Interpretation |
+| Nozzle tip center | O = (0, 0, 0) | Reference origin |
+| Tool axis | +x | Positive x is forward towards nozzle tip |
+| Left direction (from perspective of robot) | +y | Camera mounted at a negative y value |
+| Vertical direction | +z | Fixed h = 0 for this design, camera is inline with reference origin z |
+
+### Placement geometry
+These are the preliminary values chosen:
+
+| Property | Definition | Interpretation |
+| Camera optical center | C = (-40, -60, 0) mm | 40 mm behind, 60 mm to the right, inline height |
+| Yaw | +x | 25.5 degrees | 25.5 degrees pointing towards tool axis
+| Nozzle diameter | 31.75 mm (1.25 inches) |  |
+| Vertical direction | +z | Fixed h = 0 for this design, camera is inline with reference origin z |
+
+Current end-effector assembly used as physical mounting reference:
+![Current end-effector assembly used as physical mounting reference](../assets/projects/tomato/wrist_cam_mount_ref.png)
+
+Visually sketched out:
+![Visually sketched out](../assets/projects/tomato/xyplane_wrist_cam.png)
+
+### Effect of geometry
+
+#### Occlusion point
+When choosing the lateral offset, the x distance from the tomato when the wrist camera goes blind from nozzle occlusion was the main consideration.
+
+\[
+x_{occ} = \frac{rL}{(b - r)}
+\]
+
+where L is x position (amount behind), b is lateral offset, and r is the radius of the nozzle.
+
+Plugging in the values of r, L, and b:
+
+\[
+x_{occ} = \frac{15.875 * 40}{(60 - 15.875)} = 14.4 mm
+\]
+
+Under this model, the center of a tomato on the tool axis remains geometrically visible until the nozzle is about 14.4 mm away. Below this distance, the line of sight to the tomato center intersects the nozzle disk. This should be fine because once the tomato is only around a centimeter away, if it still somehow misses because of wind then honestly I don't know what to tell you.
+
+#### "Look ahead" distance
+We don't want the camera to see exactly where the tip is currently. We want it to see quite a bit ahead to make changes before the tip does something that's not reversible. This "look ahead" distance is a consequence of the yaw, L, and b
+
+\[
+d = \frac{b}{tan(theta)} - L
+\]
+
+\[
+d = \frac{60}{tan(25.5)} - 40 = 85.8 mm
+\]
+
+Therefore, the camera is centered on a point about 86 mm in front of the nozzle tip. This should be fine for visual servoing. A tomato passes through the center of the image while the robot still has roughly 8.6 cm of forward travel available for correction.
+
+Oh I forgot to mention the yaw. It was chosen to angularly center the predicted ~40-200mm workspace area.
