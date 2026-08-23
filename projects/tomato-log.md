@@ -738,6 +738,7 @@ available as a launch option since it's much faster if I need it.
 I also found that both configs start getting worse at long range because the tomato gets too small in the image for the matching window in SGBM to fit inside it.
 
 So in theoryyy, depth is a lot lot better now but who knows wut it'll be like in a more chaotic environment.
+
 ## August 20, 2026
 Busy weeks moving in and out of apartments and tracking down metal to build the elevator. Elevator moved, but stepper motor driver dies quickly.
 
@@ -831,3 +832,73 @@ d = \frac{60}{tan(25.5)} - 40 = 85.8 mm
 Therefore, the camera is centered on a point about 86 mm in front of the nozzle tip. This should be fine for visual servoing. A tomato passes through the center of the image while the robot still has roughly 8.6 cm of forward travel available for correction.
 
 Oh I forgot to mention the yaw. It was chosen to angularly center the predicted ~40-200mm workspace area.
+
+## August 22, 2026
+
+Two main things today
+
+1. Replaced coat rack testing setup (It was my subletter's so I don't have access to it in my dorm)
+2. YOLO testing
+
+### New Testing Environment
+Part of me wants to call this a test fixture but that's probably being too generous. For this test, I wanted to also simulate the greenery of tomato plants.
+
+Basically what I did was glue a bunch of pictures of leaves on a big cardboard piece and then I took toothpicks and painted them green and stuck them into the cardboard as stems. Then I printed the same tomatoes as earlier (a little smaller) and the calyx can slide into the toothpicks. I really like the toothpick idea, makes every tomato position up to me and reconfigurable.
+
+![leaf images](../assets/projects/tomato/leaf_images.png)
+![toothpicks](../assets/projects/tomato/toothpicks.png)
+
+When it's not being used to test, it's wall art for our common room lol
+![finished tomatoes on toothpicks](../assets/projects/tomato/finished_tomatoes_on_toothpicks.png)
+
+I'm also thinking about hanging it from the ceiling with a 3d printed towel hook and some string.
+![ceiling hook](../assets/projects/tomato/ceiling_hook.png)
+
+### YOLO Testing
+The issue was that detection only worked when the tomato was pretty close, but the arm wants to work farther out than that. My first guess was that this was a dataset problem, like Laboro was trained on images where the tomatoes took up way more of the frame than mine do, so the model just never learned what a tiny cherry tomato looks like. Turns out that was wrong lol
+
+#### Measuring the two frames
+
+I grabbed two rqt screenshots, one at the distance the arm actually wants to work at and one at the distance where detection starts working.
+
+![Tomato too far to detect](../assets/projects/tomato/yolo_too_far.png)
+![Tomato close enough to detect](../assets/projects/tomato/yolo_close_enough.png)
+
+The rqt image panes render at 1.408x, so I had to divide out the display scale to get real sensor pixels:
+
+| | tomato diameter | estimated Z |
+|---|---|---|
+| too far | 15.6 px | ~82 cm |
+| close enough | 30.5 px | ~42 cm |
+
+#### Was it the training data (no prolly not)
+
+First I pulled the training args straight out of the `.pt` checkpoints. All three were trained at `imgsz=640`, 300 epochs, Ultralytics defaults, so `scale=0.5`, `mosaic=1.0`, `multi_scale=0.0`. Mosaic quarters instances, so the training set already covered a pretty wide range of apparent sizes. That already made me suspicious of my own hypothesis.
+
+Then I ran the actual test. Same two frames, `yolo11s_6`, conf floor dropped to 0.05 so I could see what the model was really thinking:
+
+```
+                 imgsz=640   imgsz=960   imgsz=1280
+near (30.5px)      0.86        0.91         0.88
+far  (15.6px)      0.42        0.68         0.68
+```
+
+So no, it is not the training data:
+
+1. The exact same model works fine on the exact same tomato at 0.86-0.91 when it's 30 px, so it does know what tomatoes look like.
+2. Upscaling recovers the far case with no retraining at all. Upscaling adds no new information**, it only adds grid cells.
+
+#### Changing imgsz
+
+Going from 640 to 960 takes the far edge of the workspace from 0.42 to 0.68. My `yolo_conf` is 0.4, so 0.42 was literally sitting on the threshold, which explains why detection was flickery instead of cleanly failing. At 960 the true detection is 0.68 and the best false positive is 0.20.
+
+Cost is roughly 2.2 s/frame vs 1.0 s at 640.
+
+The bounding boxes don't all show up, but they're tracked down in the terminal:
+
+![YOLO working](../assets/projects/tomato/working_yolo_maybe.png)
+
+
+#### ROI (saving this for tomorrow)
+
+So the IMX708 only has three sensor modes, so there's no intermediate one. But `rpicam-vid --roi` sets a digital crop and gives continuous FOV control, so I'll probably look into this tomorrow. Even though YOLO works well, VFOV is still quite small at like 25 degrees and even though we have the elevator we probably want it closer to 30+.
