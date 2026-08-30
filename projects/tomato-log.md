@@ -740,7 +740,7 @@ So in theoryyy, depth is a lot lot better now but who knows wut it'll be like in
 ## August 20, 2026
 Busy weeks moving in and out of apartments and tracking down metal to build the elevator. Elevator moved, but stepper motor driver dies quickly.
 
-![Elevator moving](../assets/projects/tomato/elevator_moving.MOV)
+![Elevator moving](../assets/projects/tomato/elevator_moving.mp4)
 
 It's quite difficult to transport, so it'll probably be a while until the arm and elevator are integrated. Since the elevator isn't a unique DOF, the arm and elevator are not modularly distinct, so it's hard to test without integrating them together. Most elevator testing will probably be in simulation because it's so hard to move the elevator to a space where both of us can work on it.
 
@@ -930,9 +930,9 @@ Harvesting was much more consistent with the new depth range, and the elevator g
 
 Some harvesting examples:
 
-![Harvesting 1](../assets/projects/tomato/aug_28/harvesting1.mov)
-![Harvesting 2](../assets/projects/tomato/aug_28/harvesting2.mov)
-![Harvesting 3](../assets/projects/tomato/aug_28/harvesting3.mov)
+![Harvesting 1](../assets/projects/tomato/aug_28/harvesting1.mp4)
+![Harvesting 2](../assets/projects/tomato/aug_28/harvesting2.mp4)
+![Harvesting 3](../assets/projects/tomato/aug_28/harvesting3.mp4)
 
 ### Issues
 The main issue we saw was getting enough disparity for tomatoes' ROI. They are so tiny, basically just a spec in the FOV.
