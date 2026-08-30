@@ -44,8 +44,8 @@ body {
     padding: 60px 20px;
     border-top: 3px solid var(--accent, transparent);
     transition:
-        background 0.25s,
-        color 0.25s;
+        background 0.2s,
+        color 0.2s;
 }
 
 .container {
@@ -148,7 +148,7 @@ nav a {
     color: var(--text);
     text-decoration: none;
     margin-right: 20px;
-    transition: color 0.1s;
+    transition: color 0.2s;
 }
 
 nav a:hover {
@@ -159,6 +159,7 @@ nav a:hover {
 nav a.name {
     font-weight: 600;
     margin-right: 40px;
+    transition: color 0.2s;
 }
 
 nav a.name:hover {
@@ -181,7 +182,7 @@ nav a.name:hover {
 .icon-moon {
     color: var(--muted);
     flex-shrink: 0;
-    transition: 0.1s;
+    transition: 0.2s;
 }
 
 [data-theme='light'] .icon-sun,
@@ -229,7 +230,7 @@ p {
 a {
     color: var(--link);
     text-decoration: underline;
-    transition: color 0.1s;
+    transition: color 0.2s;
 }
 
 a:hover {
@@ -434,7 +435,7 @@ h2 {
     padding: 7px 0 8px;
     cursor: pointer;
     text-align: center;
-    transition: color 0.1s, border-color 0.1s;
+    transition: color 0.2s, border-color 0.2s;
 }
 
 .project-tab:hover,
@@ -465,7 +466,7 @@ h2 {
     cursor: pointer;
     color: var(--link);
     text-decoration: underline;
-    transition: color 0.1s;
+    transition: color 0.2s;
 }
 
 .collection-item:hover {
@@ -540,7 +541,7 @@ h2 {
     line-height: 1.4;
     position: relative;
     cursor: pointer;
-    transition: color 0.1s;
+    transition: color 0.2s;
 }
 
 a.listening-title:hover {
@@ -761,7 +762,7 @@ a.listening-title:hover {
     align-items: center;
     justify-content: center;
     opacity: 0;
-    transition: opacity 0.15s;
+    transition: opacity 0.2s;
     z-index: 1;
 }
 
@@ -790,7 +791,7 @@ a.listening-title:hover {
     height: 5px;
     border-radius: 50%;
     background: rgba(255, 255, 255, 0.45);
-    transition: background 0.15s;
+    transition: background 0.2s;
 }
 
 .carousel-dot.active {
@@ -905,9 +906,9 @@ a.listening-title:hover {
     color: var(--muted);
     cursor: pointer;
     transition:
-        border-color 0.15s,
-        color 0.15s,
-        background 0.15s;
+        border-color 0.2s,
+        color 0.2s,
+        background 0.2s;
 }
 
 .sort-btn:hover {
@@ -1058,7 +1059,7 @@ a.listening-title:hover {
     border: none;
     padding: 14px 18px 0 0;
     white-space: nowrap;
-    transition: border-color 0.1s, color 0.1s;
+    transition: border-color 0.2s, color 0.2s;
 }
 
 .log-nav-item::after {
@@ -1080,6 +1081,7 @@ a.listening-title:hover {
     height: 7px;
     border: 1px solid var(--accent);
     border-radius: 50%;
+    transition: background 0.2s, border-color 0.2s;
     background: var(--bg);
     z-index: 1;
 }
@@ -1131,7 +1133,7 @@ a.listening-title:hover {
     font-family: inherit;
     font-size: 15px;
     line-height: 1;
-    transition: border-color 0.1s, color 0.1s;
+    transition: border-color 0.2s, color 0.2s;
 }
 
 .log-scroll-prev {
@@ -1193,7 +1195,7 @@ a.listening-title:hover {
     color: var(--text);
     text-decoration: none;
     border-bottom: 1px solid var(--border);
-    transition: border-color 0.16s ease, color 0.16s ease;
+    transition: border-color 0.2s ease, color 0.2s ease;
 }
 
 .log-milestone-date a:hover {
@@ -1375,7 +1377,7 @@ a.listening-title:hover {
 .log-media-link {
     display: block;
     text-decoration: none;
-    transition: opacity 0.1s, transform 0.1s;
+    transition: opacity 0.2s, transform 0.2s;
 }
 
 .log-media-link:hover {
@@ -1574,7 +1576,7 @@ a.listening-title:hover {
     font-weight: 500;
     margin-right: 0;
     text-decoration: none;
-    transition: color 0.25s ease, background-color 0.25s ease, border-color 0.25s ease;
+    transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
 }
 
 .section-jump a:hover {
@@ -1635,7 +1637,7 @@ a.listening-title:hover {
     width: 100%;
     aspect-ratio: 4 / 3;
     object-fit: cover;
-    transition: transform 0.25s ease, opacity 0.25s ease;
+    transition: transform 0.2s ease, opacity 0.2s ease;
 }
 
 .spec-shot a:hover img {
@@ -1674,7 +1676,7 @@ a.listening-title:hover {
     width: 260px;
     height: 180px;
     border-radius: 0;
-    transition: transform 0.3s ease;
+    transition: transform 0.2s ease;
 }
 
 .project-card--featured .project-thumb-link:hover .project-thumb {
@@ -1721,7 +1723,7 @@ a.listening-title:hover {
     font-size: 13px;
     font-weight: 600;
     text-decoration: none;
-    transition: background-color 0.25s ease, color 0.25s ease;
+    transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 .demo-button:hover {
