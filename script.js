@@ -629,6 +629,9 @@
           { image: 'assets/apples/royal_gala.png', cells: ['Royal Gala', 3, 0, 2, 3, 2.5, '7/10'] },
           { image: 'assets/apples/kanzi.png', cells: ['Kanzi', 1.5, 4, 4.5, 3, 5, '7/10'] },
           { image: 'assets/apples/wild_twist.png', cells: ['Wild Twist', 4.5, 0, 3, 5, 4.5, '9.5/10'] },
+          { image: 'assets/apples/jazz.png', cells: ['Soluna', 4, 0, 2.5, 3, 3, '7.5/10'] },
+          { image: 'assets/apples/soluna.png', cells: ['Soluna', 3.5, 1.5, 2.5, 2.5, 4, '7.5/10'] },
+          { image: 'assets/apples/red_delicious.png', cells: ['Red Delicious', 3, 0.5, 1.5, 2, 4, '6.5/10'] },
         ]
       }
     };
