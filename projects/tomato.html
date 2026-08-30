@@ -22,6 +22,7 @@
             };
         </script>
         <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+        <script type="module" src="https://cdn.jsdelivr.net/npm/@google/model-viewer@4.0.0/dist/model-viewer.min.js"></script>
         <script src="../script.js"></script>
         <script data-goatcounter="https://annsong.goatcounter.com/count"
                 async src="//gc.zgo.at/count.js"></script>
@@ -69,31 +70,85 @@
             </div>
 
             <section class="tab-panel active" id="tomato-final" role="tabpanel">
-                <h2>System Overview</h2>
-                <p>
-                    A working prototype that combines a compact 4-DOF arm, a stereo-vision perception
-                    pipeline, closed-form inverse kinematics, and a vacuum (shop-vac) end effector.
-                </p>
+                <nav class="section-jump" aria-label="Jump to a section">
+                    <a class="section-jump-primary" href="#tomato-demo">
+                        <span class="section-jump-play" aria-hidden="true"></span>
+                        Watch the demo
+                    </a>
+                    <a href="#tomato-cad">Design Overview</a>
+                </nav>
 
+                <h2 id="tomato-demo">Demo</h2>
                 <figure class="project-demo">
-                    <video src="../assets/projects/tomato/tomato_sucking_field.mp4" controls playsinline preload="metadata" poster="../assets/projects/tomato/dashboard.png"></video>
+                    <div class="project-demo-row">
+                        <video src="../assets/projects/tomato/aug_28/harvesting1.mov#t=0.001" controls playsinline preload="metadata"></video>
+                        <video src="../assets/projects/tomato/aug_28/harvesting2.mov#t=0.001" controls playsinline preload="metadata"></video>
+                        <video src="../assets/projects/tomato/aug_28/harvesting3.mov#t=0.001" controls playsinline preload="metadata"></video>
+                    </div>
                     <figcaption>The current system picking cherry tomatoes.</figcaption>
                 </figure>
 
                 <hr />
 
-                <h2>What It Does</h2>
-                <ul class="project-detail-list">
-                    <li>Detects cherry tomatoes with a YOLOv11 model, classifies ripeness, and tracks each fruit with a persistent ID across frames.</li>
-                    <li>Estimates every tomato's 3D position from stereo disparity (SGBM) and a pinhole camera model, then transforms it into the arm's base frame.</li>
-                    <li>Plans a staged straight-line approach (align → pregrasp → contact → retreat → home) and solves it with an analytic 4-DOF inverse-kinematics solver.</li>
-                    <li>Drives the vacuum end effector onto the fruit under a manual select-and-approve workflow, guarded by several independent motor safety limits.</li>
-                    <li>Records and replays hand-demonstrated trajectories as groundwork for planned imitation learning.</li>
-                </ul>
+                <h2 id="tomato-cad">System Overview</h2>
+                <p>
+                    A working prototype that combines a compact 4-DOF arm, a stereo-vision perception
+                    pipeline, closed-form inverse kinematics, and a vacuum (shop-vac) end effector.
+                </p>
+
+                <div class="project-cad-panel">
+                    <div class="project-cad-row">
+                    <figure class="project-cad">
+                        <model-viewer
+                            src="../assets/projects/tomato/Arm_Cam.glb"
+                            alt="CAD assembly of the 4-DOF arm with the stereo camera pair and vacuum end effector"
+                            camera-controls
+                            touch-action="pan-y"
+                            auto-rotate
+                            auto-rotate-delay="3000"
+                            rotation-per-second="12deg"
+                            camera-orbit="35deg 72deg 1.6m"
+                            min-camera-orbit="auto auto 0.6m"
+                            max-camera-orbit="auto auto 3.5m"
+                            shadow-intensity="0.8"
+                            shadow-softness="0.8"
+                            exposure="0.65"
+                            tone-mapping="neutral"
+                            environment-image="neutral"
+                            loading="lazy"
+                            reveal="auto">
+                        </model-viewer>
+                        <figcaption>The arm, stereo pair, and vacuum end effector.</figcaption>
+                    </figure>
+                    <figure class="project-cad">
+                        <model-viewer
+                            src="../assets/projects/tomato/Arm_Cam_Elevator.glb"
+                            alt="CAD assembly of the arm and cameras mounted on the elevator carriage"
+                            camera-controls
+                            touch-action="pan-y"
+                            auto-rotate
+                            auto-rotate-delay="3000"
+                            rotation-per-second="12deg"
+                            camera-orbit="35deg 72deg 4m"
+                            min-camera-orbit="auto auto 1.5m"
+                            max-camera-orbit="auto auto 8m"
+                            shadow-intensity="0.8"
+                            shadow-softness="0.8"
+                            exposure="0.65"
+                            tone-mapping="neutral"
+                            environment-image="neutral"
+                            loading="lazy"
+                            reveal="auto">
+                        </model-viewer>
+                        <figcaption>The same head mounted on the elevator carriage.</figcaption>
+                    </figure>
+                    </div>
+                    <p class="project-cad-note">Drag to orbit, scroll to zoom, right-drag to pan.</p>
+                </div>
 
                 <hr />
 
-                <h2>Future Work</h2>
+                <!-- <h2>Future Work</h2>
                 <ul class="project-detail-list">
                     <li>
                         <b>An elevator for the arm and cameras:</b> Real tomatoes sit higher than the
@@ -107,7 +162,7 @@
                     <li>
                         <b>Imitation learning: </b> Integrate an ACT policy with inverse kinematics.
                     </li>
-                </ul>
+                </ul> -->
             </section>
 
             <section class="tab-panel" id="tomato-process" role="tabpanel" hidden>
@@ -121,7 +176,7 @@
                 <div class="markdown-log" data-log-src="tomato-log.md">Loading log...</div>
             </section>
 
-            <p class="last-edited">Last Updated: August 2, 2026</p>
+            <p class="last-edited">Last Updated: August 29, 2026</p>
         </div>
     </body>
 </html>

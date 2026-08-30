@@ -420,7 +420,7 @@
             const label = alt || 'Open PDF';
             mediaItems.push('<div class="log-pdf"><iframe src="' + src + '" title="' + label + '" loading="lazy"></iframe><a href="' + src + '">Open ' + label + '</a></div>');
           } else if (/\.(mp4|webm|mov)$/i.test(src)) {
-            mediaItems.push('<video src="' + src + '" controls playsinline preload="none"></video>');
+            mediaItems.push('<video src="' + src + '#t=0.001" controls playsinline preload="metadata"></video>');
           } else {
             mediaItems.push('<a class="log-media-link" href="' + src + '"><img src="' + src + '" alt="' + alt + '" loading="lazy" decoding="async" /></a>');
           }

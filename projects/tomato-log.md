@@ -24,12 +24,10 @@ The date should match a log entry heading.
 
 ## Milestones
 
-- 🍅 August 20, 2026 - Elevator moving
-- 🍅 July 25, 2026 - Harvested a real tomato in the field
-- 🍅 July 17, 2026 - Expanded from one tomato into a multi-tomato harvesting workflow.
-- 🍅 July 12, 2026 - Connected stereo depth, eye-to-hand math, controller planning, and IK
+- 🍅 August 28, 2026 - Harvested tomatoes in the field consistently
+- 🍅 August 20, 2026 - Elevator assembled
+- 🍅 July 25, 2026 - Harvested first real tomato in the field
 - 🍅 June 26, 2026 - Robot arm assembled
-- 🍅 June 23, 2026 - Robot arm design completed
 - 🍅 June 4, 2026 - Project start
 
 ## June 04, 2026
@@ -902,3 +900,45 @@ The bounding boxes don't all show up, but they're tracked down in the terminal:
 #### ROI (saving this for tomorrow)
 
 So the IMX708 only has three sensor modes, so there's no intermediate one. But `rpicam-vid --roi` sets a digital crop and gives continuous FOV control, so I'll probably look into this tomorrow. Even though YOLO works well, VFOV is still quite small at like 25 degrees and even though we have the elevator we probably want it closer to 30+.
+
+## August 28, 2026
+
+After a lot of iterations, we tested on real tomatoes for the second time today.
+
+
+### Problems from July 25
+
+| # | Problem from July 25 | Solution |
+|---|---|---|
+| 1 | SGBM was tuned for ~60–80 cm, but tomatoes grow high so the actual working depth was ~40–50 cm. Trade off between forward distance (x) and depth, and we had to retune on the fly | Depth range is now 45-90cm |
+| 2 | Arm's vertical workspace didn't line up with where tomatoes actually grow | Elevator built, increased depth range, expanded VFOV |
+| 3 | Cameras covered a much smaller area than expected (narrow FOV) | Increased HFOV from 33 degrees to 63 degrees and VFOV from 25 degrees to 38 degrees |
+| 4 | Dashboard was super slow, so every approach/retract had to be sent through the terminal | Camera images no longer go through the websocket, using web_video_server ros node instead to prevent lag |
+| 5 | Heavy leaf occlusion around the fruit | Added a wrist camera |
+
+Elevator with the arm mounted and wrist camera are shown below:
+
+![Arm on elevator](../assets/projects/tomato/aug_28/arm_on_elevator.jpg)
+![Wrist camera](../assets/projects/tomato/aug_28/wrist_camera.png)
+
+A couple notes:
+1. Elevator only moves manually for now because we need to get a new stepper motor driver.
+2. Wrist camera is not being used for visual servoing, but it is recording everytime we attempt a harvest for future analysis on how we wanna go about using it.
+
+### Results
+Harvesting was much more consistent with the new depth range, and the elevator gave us a lot of flexibility in how we approached each tomato. Raising or lowering the elevator solved two problems at once: tomatoes that used to sit outside the arm's vertical reach came within reach, and tomatoes that fell outside the overhead camera's depth range moved into it.
+
+Some harvesting examples:
+
+![Harvesting 1](../assets/projects/tomato/aug_28/harvesting1.mov)
+![Harvesting 2](../assets/projects/tomato/aug_28/harvesting2.mov)
+![Harvesting 3](../assets/projects/tomato/aug_28/harvesting3.mov)
+
+### Issues
+The main issue we saw was getting enough disparity for tomatoes' ROI. They are so tiny, basically just a spec in the FOV.
+
+### Next Steps
+1. A number of minor quality of life changes
+2. Integration of wrist camera into pipeline
+3. Dynamically zooming into the image for depth estimation.
+
