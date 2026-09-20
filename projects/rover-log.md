@@ -28,6 +28,129 @@ data-milestone-icon in rover.html, so the emoji here is optional.
 
 - 🚀 September 18, 2026 - Project start
 
+## September 20, 2026
+Yesterday I fit the motion transmission model empirically but I lowk don't understand how that worked, so I derived it today with the link geometry.
+
+So the link is just a parallelogram:
+
+![Parallelogram](../assets/projects/rover/parallelogram.png)
+
+| Part | What it is |
+| --- | --- |
+| A | Shared base axis |
+| AB | Short input crank driven by the elbow motor |
+| AD | Upper arm driven by the shoulder motor |
+| BC | Connecting rod |
+| DC | Short output crank rigidly attached to the forearm |
+
+The shoulder rotates AD around A and the elbow motor rotates AB around A.
+
+The dimensions are:
+
+$$
+AB = DC = 0.08\text{ m}
+$$
+
+$$
+AD = BC = 0.47\text{ m}
+$$
+
+A → B and D → C stay parallel and point in the same direction, so if AB rotates $10^\circ$, DC also rotates $10^\circ$. Since the forearm is rigidly attached to DC, it rotates by the same amount too. This means it's one-to-one.
+
+Assuming the elbow motor housing is fixed to the base and its corrected output angle follows AB one-to-one, this gives:
+
+$$
+\Delta\beta = \Delta\theta_e
+$$
+
+Here, $\beta$ is the forearm's orientation measured from horizontal, and $\theta_e$ is the elbow motor reading after the configured sign and zero corrections.
+
+Equal changes mean their difference stays constant:
+
+$$
+\beta = \theta_e + C
+$$
+
+So we just need to find the constant C!
+
+I was confused by the angles and everything so here's an interactive diagram again because it helped yesterday:
+
+![How the parallelogram converts motor angles](../assets/projects/rover/parallelogram_angles.html)
+
+### Getting C from the startup pose
+
+At the L-shaped startup, the upper arm is vertical and the forearm is horizontal:
+
+$$
+q_s = 90^\circ, \qquad q_e = -90^\circ, \qquad \beta = 0^\circ
+$$
+
+The raw elbow encoder reading at that pose was $88.89^\circ$. I had configured the elbow with:
+
+```yaml
+direction: -1
+zero_offset_deg: -1.11
+```
+
+That zero offset came from $88.89^\circ - 90^\circ = -1.11^\circ$. The motor node converts the raw reading $r$ into the motor coordinate using:
+
+$$
+\theta_e = \text{direction}\,(r - \text{zero offset})
+$$
+
+Keeping everything in degrees for this derivation, the startup reading becomes:
+
+$$
+\theta_e = -(88.89^\circ - (-1.11^\circ)) = -90^\circ
+$$
+
+So at startup, the forearm's absolute orientation is $0^\circ$, while the corrected motor coordinate is $-90^\circ$. Substituting into $\beta = \theta_e + C$:
+
+$$
+C = \beta - \theta_e = 0^\circ - (-90^\circ) = 90^\circ
+$$
+
+The clean $90^\circ$ isn't a coincidence lol. I deliberately chose the encoder zero so the motor would read $-90^\circ$ at this pose. If I had made it read $0^\circ$ when the forearm was horizontal, then $C$ would have been zero instead.
+
+### Final nominal transmission model
+
+The physical elbow angle is still the forearm angle relative to the upper arm:
+
+$$
+q_e = \beta - q_s
+$$
+
+Substituting $\beta = \theta_e + 90^\circ$ and $q_s = \theta_s$:
+
+$$
+q_e = \theta_e - \theta_s + 90^\circ
+$$
+
+In radians:
+
+$$
+q_s = \theta_s
+$$
+
+$$
+q_e = \theta_e - \theta_s + \frac{\pi}{2}
+$$
+
+To turn the physical joint angles from IK into motor commands, reverse it:
+
+$$
+\theta_s = q_s
+$$
+
+$$
+\theta_e = q_e + q_s - \frac{\pi}{2}
+$$
+
+I think the distinction finally clicked when I realized the physical elbow angle and the corrected elbow motor reading both happen to be $-90^\circ$ at startup. Kinda screwed myself over there because they don't stay equal. If the shoulder moves from $90^\circ$ to $60^\circ$ while the forearm stays horizontal, the physical elbow angle becomes $-60^\circ$, but the elbow motor reading stays at $-90^\circ$.
+
+The empirical fit with that rotating wrist offset included gave $C \approx 89.85^\circ$, close to the $90^\circ$. Next is testing to make sure I didn't just make everything I just said up.
+
+
 ## September 19, 2026
 
 I started the day by submitting a [PR](https://github.com/2b-t/myactuator_rmd/pull/28) to the MyActuatorSDK repo.
@@ -72,7 +195,7 @@ L_{1} = 0.47m
 $$
 
 $$
-L_{2} = 0.67m
+L_{2} = 0.46m
 $$
 
 $$
