@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Elbow Motor vs Joint Angle</title>
+
+  <script>
+    // Follow the site theme (same origin, so localStorage is shared).
+    try {
+      document.documentElement.setAttribute(
+        'data-theme',
+        localStorage.getItem('theme') || 'dark'
+      );
+    } catch (e) {
+      document.documentElement.setAttribute('data-theme', 'dark');
+    }
+  </script>
+
+  <style>
+    :root {
+      --text: #111;
+      --muted: #666;
+      --border: #ddd;
+      --accent: #fd73a9;
+      --upper: #3f6fd8;
+      --forearm: #d94b87;
+      --guide: #b9b9b9;
+    }
+
+    [data-theme='dark'] {
+      --text: #ccc;
+      --muted: #777;
+      --border: #2e2e2e;
+      --accent: #fd73a9;
+      --upper: #7ea6f2;
+      --forearm: #fd73a9;
+      --guide: #4a4a4a;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family:
+        -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      font-size: 14px;
+      line-height: 1.6;
+      color: var(--text);
+      background: transparent;
+    }
+
+    main {
+      max-width: 960px;
+      margin: auto;
+    }
+
+    h1 {
+      font-size: 17px;
+      margin: 0 0 8px;
+    }
+
+    h2 {
+      font-size: 14px;
+      margin: 0 0 8px;
+    }
+
+    p { margin: 0 0 10px; }
+
+    .intro { color: var(--muted); }
+
+    .controls {
+      margin: 18px 0;
+    }
+
+    input[type="range"] {
+      display: block;
+      width: min(100%, 450px);
+      margin-top: 10px;
+      accent-color: var(--accent);
+    }
+
+    output { font-variant-numeric: tabular-nums; }
+
+    .panels {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    section {
+      padding: 14px;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+    }
+
+    svg {
+      display: block;
+      width: 100%;
+      height: 300px;
+    }
+
+    svg text {
+      fill: var(--muted);
+      font-size: 12px;
+    }
+
+    .values {
+      line-height: 1.8;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .note { color: var(--muted); font-size: 13px; }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin: 14px 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .swatch {
+      display: inline-block;
+      width: 24px;
+      height: 6px;
+      margin-right: 6px;
+      vertical-align: middle;
+      border-radius: 3px;
+    }
+
+    .upper { background: var(--upper); }
+    .forearm { background: var(--forearm); }
+
+    @media (max-width: 700px) {
+      .panels { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+
+<body>
+<main>
+
+  <p class="intro">
+    Move the shoulder while keeping the elbow motor reading fixed.
+  </p>
+
+  <div class="controls">
+    <label for="shoulder">
+      Shoulder angle:
+      <output id="shoulder-value" for="shoulder">60°</output>
+    </label>
+
+    <input
+      id="shoulder"
+      type="range"
+      min="30"
+      max="90"
+      step="1"
+      value="60"
+    >
+
+    <p>Elbow motor reading θₑ = −30° in both models.</p>
+  </div>
+
+  <div class="legend">
+    <span><span class="swatch upper"></span>Upper arm</span>
+    <span><span class="swatch forearm"></span>Forearm</span>
+    <span>Dashed line: upper-arm direction extended past elbow</span>
+  </div>
+
+  <div class="panels">
+    <section>
+      <h2>Initial assumption: direct elbow drive</h2>
+
+      <p>
+        qₑ = θₑ<br>
+        Forearm orientation β = θₛ + θₑ
+      </p>
+
+      <svg id="direct-svg" role="img"></svg>
+      <div id="direct-values" class="values" aria-live="polite"></div>
+
+      <p class="note">The relative elbow angle stays fixed.</p>
+    </section>
+
+    <section>
+      <h2>Proposed linkage relationship</h2>
+
+      <p>
+        qₑ = θₑ − θₛ + C<br>
+        Forearm orientation β = θₑ + C
+      </p>
+
+      <svg id="linkage-svg" role="img"></svg>
+      <div id="linkage-values" class="values" aria-live="polite"></div>
+
+      <p class="note">The forearm orientation relative to horizontal stays fixed.</p>
+    </section>
+  </div>
+</main>
+
+<script>
+  const slider = document.getElementById("shoulder");
+  const shoulderValue = document.getElementById("shoulder-value");
+
+  // All angles in this demonstration are in degrees.
+  const ELBOW_MOTOR = -30;
+  const C = 0;
+
+  const radians = degrees => degrees * Math.PI / 180;
+
+  function themeColor(name) {
+    return getComputedStyle(document.documentElement)
+      .getPropertyValue(name)
+      .trim();
+  }
+
+  function pointFrom(origin, length, angleDegrees) {
+    const angle = radians(angleDegrees);
+
+    // SVG y increases downward, so subtract the vertical component.
+    return [
+      origin[0] + length * Math.cos(angle),
+      origin[1] - length * Math.sin(angle)
+    ];
+  }
+
+  function line(a, b, color, width, extra = "") {
+    return `
+      <line
+        x1="${a[0]}" y1="${a[1]}"
+        x2="${b[0]}" y2="${b[1]}"
+        stroke="${color}"
+        stroke-width="${width}"
+        ${extra}
+      />
+    `;
+  }
+
+  function draw(svgId, shoulderAngle, forearmAngle) {
+    const svg = document.getElementById(svgId);
+    const width = svg.getBoundingClientRect().width;
+
+    if (width <= 0) return;
+
+    const height = 300;
+
+    // Reserve room for labels on narrow screens.
+    const linkLength = Math.min(110, (width - 85) / 2);
+    const shoulder = [32, 220];
+    const elbow = pointFrom(shoulder, linkLength, shoulderAngle);
+    const wrist = pointFrom(elbow, linkLength, forearmAngle);
+
+    const elbowAngle = forearmAngle - shoulderAngle;
+
+    // Extend the upper-arm direction beyond the elbow.
+    const referenceEnd = pointFrom(elbow, 48, shoulderAngle);
+
+    // Draw the relative elbow angle from that extension to the forearm.
+    const arcPoints = [];
+
+    for (let i = 0; i <= 40; i++) {
+      const angle = shoulderAngle + elbowAngle * i / 40;
+      arcPoints.push(pointFrom(elbow, 28, angle).join(","));
+    }
+
+    svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
+    svg.setAttribute(
+      "aria-label",
+      `Shoulder ${shoulderAngle} degrees, ` +
+      `forearm ${forearmAngle} degrees from horizontal, ` +
+      `relative elbow angle ${elbowAngle} degrees.`
+    );
+
+    const upperColor = themeColor("--upper");
+    const forearmColor = themeColor("--forearm");
+    const guideColor = themeColor("--guide");
+    const inkColor = themeColor("--text");
+
+    svg.innerHTML = `
+      ${line([12, 220], [width - 12, 220], guideColor, 1)}
+      <text x="12" y="245">Horizontal reference</text>
+
+      ${line(
+        elbow,
+        referenceEnd,
+        guideColor,
+        1.5,
+        'stroke-dasharray="5 4"'
+      )}
+
+      ${line(
+        shoulder,
+        elbow,
+        upperColor,
+        8,
+        'stroke-linecap="round"'
+      )}
+
+      ${line(
+        elbow,
+        wrist,
+        forearmColor,
+        8,
+        'stroke-linecap="round"'
+      )}
+
+      <polyline
+        points="${arcPoints.join(" ")}"
+        fill="none"
+        stroke="${inkColor}"
+        stroke-width="1.5"
+      />
+
+      ${[shoulder, elbow, wrist].map(point => `
+        <circle
+          cx="${point[0]}"
+          cy="${point[1]}"
+          r="5"
+          fill="${inkColor}"
+        />
+      `).join("")}
+
+      <text x="${shoulder[0] - 12}" y="278">Shoulder</text>
+
+      <text
+        x="${elbow[0]}"
+        y="${elbow[1] - 18}"
+        text-anchor="middle"
+      >Elbow</text>
+
+      <text
+        x="${wrist[0] + 9}"
+        y="${wrist[1] + 5}"
+      >Wrist</text>
+    `;
+  }
+
+  function update() {
+    const shoulderAngle = Number(slider.value);
+    shoulderValue.textContent = `${shoulderAngle}°`;
+
+    // Model 1: motor measures the relative elbow angle.
+    const directElbow = ELBOW_MOTOR;
+    const directForearm = shoulderAngle + directElbow;
+
+    // Model 2: motor tracks absolute forearm orientation.
+    const linkageForearm = ELBOW_MOTOR + C;
+    const linkageElbow = linkageForearm - shoulderAngle;
+
+    draw("direct-svg", shoulderAngle, directForearm);
+    draw("linkage-svg", shoulderAngle, linkageForearm);
+
+    document.getElementById("direct-values").innerHTML = `
+      Forearm from horizontal: <strong>${directForearm}°</strong><br>
+      Relative elbow angle qₑ: <strong>${directElbow}°</strong>
+    `;
+
+    document.getElementById("linkage-values").innerHTML = `
+      Forearm from horizontal: <strong>${linkageForearm}°</strong><br>
+      Relative elbow angle qₑ: <strong>${linkageElbow}°</strong>
+    `;
+  }
+
+  slider.addEventListener("input", update);
+
+  // The parent page tells us when the site theme changes.
+  window.addEventListener("message", function (event) {
+    if (!event.data || event.data.type !== "theme") return;
+    document.documentElement.setAttribute("data-theme", event.data.theme);
+    update();
+  });
+
+  const observer = new ResizeObserver(update);
+  observer.observe(document.querySelector(".panels"));
+
+  update();
+</script>
+</body>
+</html>

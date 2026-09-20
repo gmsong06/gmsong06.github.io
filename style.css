@@ -1442,6 +1442,24 @@ a.listening-title:hover {
     margin-top: 6px;
 }
 
+.log-embed {
+    width: 100%;
+}
+
+.log-embed iframe {
+    display: block;
+    width: 100%;
+    height: min(760px, 85vh);
+    border: none;
+    background: transparent;
+}
+
+.log-embed figcaption {
+    color: var(--muted);
+    font-size: 12px;
+    margin-top: 6px;
+}
+
 .log-pdf {
     width: 100%;
 }

@@ -820,7 +820,7 @@ Under this model, the center of a tomato on the tool axis remains geometrically 
 We don't want the camera to see exactly where the tip is currently. We want it to see quite a bit ahead to make changes before the tip does something that's not reversible. This "look ahead" distance is a consequence of the yaw, L, and b
 
 \[
-d = \frac{b}{tan(theta)} - L
+d = \frac{b}{\tan(\theta)} - L
 \]
 
 \[

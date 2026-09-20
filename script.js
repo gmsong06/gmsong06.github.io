@@ -418,7 +418,10 @@
           flushParagraph();
           const alt = escapeHtml(media[1]);
           const src = escapeHtml(media[2]);
-          if (/\.pdf$/i.test(src)) {
+          if (/\.html?$/i.test(src)) {
+            const label = alt || 'Interactive demo';
+            mediaItems.push('<div class="log-embed"><iframe src="' + src + '" title="' + label + '" loading="lazy"></iframe><figcaption>' + label + ' &middot; <a href="' + src + '" target="_blank" rel="noopener">open in a new tab</a></figcaption></div>');
+          } else if (/\.pdf$/i.test(src)) {
             const label = alt || 'Open PDF';
             mediaItems.push('<div class="log-pdf"><iframe src="' + src + '" title="' + label + '" loading="lazy"></iframe><a href="' + src + '">Open ' + label + '</a></div>');
           } else if (/\.(mp4|webm|mov)$/i.test(src)) {
@@ -480,6 +483,41 @@
     });
   }
 
+  function initLogLightbox() {
+    if (!document.querySelector('.markdown-log')) return;
+    const box = document.createElement('div');
+    box.className = 'lightbox';
+    const img = document.createElement('img');
+    img.className = 'lightbox-img';
+    img.alt = '';
+    box.appendChild(img);
+    document.body.appendChild(box);
+
+    function close() {
+      box.classList.remove('open');
+      img.src = '';
+    }
+
+    document.addEventListener('click', function (e) {
+      const link = e.target.closest ? e.target.closest('.log-media-link') : null;
+      if (!link) return;
+      e.preventDefault();
+      const full = link.querySelector('img');
+      img.src = link.getAttribute('href');
+      img.alt = full ? full.alt : '';
+      box.classList.add('open');
+    });
+
+    // Clicking the backdrop closes; clicking the image itself does not.
+    box.addEventListener('click', function (e) {
+      if (e.target !== img) close();
+    });
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && box.classList.contains('open')) close();
+    });
+  }
+
   function initLogTimelineScroll() {
     document.querySelectorAll('.log-timeline').forEach(function (timeline) {
       const nav = timeline.querySelector('.log-nav');
@@ -503,6 +541,7 @@
     initProjectTabs();
     initMarkdownLogs();
     initLogTimelineScroll();
+    initLogLightbox();
     generateLogNav();
     updateActiveLogNav({ force: true });
 
@@ -534,6 +573,11 @@
         const next = current === 'dark' ? 'light' : 'dark';
         document.documentElement.setAttribute('data-theme', next);
         localStorage.setItem('theme', next);
+        document.querySelectorAll('.log-embed iframe').forEach(function (frame) {
+          if (frame.contentWindow) {
+            frame.contentWindow.postMessage({ type: 'theme', theme: next }, '*');
+          }
+        });
       });
     }
 

@@ -9,6 +9,7 @@ Write progress notes here. Multiple paragraphs are okay.
 ![Video caption](../assets/projects/rover/video.mp4)
 
 Inline math: $x = y + z$
+Greek letters and degrees need a backslash: $\theta$, $90^\circ$
 Display math:
 $$
 x = y + z
@@ -26,6 +27,158 @@ data-milestone-icon in rover.html, so the emoji here is optional.
 ## Milestones
 
 - 🚀 September 18, 2026 - Project start
+
+## September 19, 2026
+
+I started the day by submitting a [PR](https://github.com/2b-t/myactuator_rmd/pull/28) to the MyActuatorSDK repo.
+
+Early on in the day we also found a work around to the Teensy CAN issue by just not using Teensy. We found a way to get all three of the motors on the arm right now onto the same bus, so we could use the initial USB to CAN adapter that was already working.
+
+The rest of the day was working on the kinematics of the arm.
+
+I established a mahematical zero as a reference point:
+
+![Ref zero](../assets/projects/rover/ref_zero.PNG)
+
+as well as a physical startup pose the robot could start with that's more stable than the reference zero:
+
+![Physical startup](../assets/projects/rover/physical_zero.JPG)
+
+Physical angle definitions:
+
+q_s = upper arm angle measured from horizontal
+
+q_e = forearm angle measured relative to upper arm
+
+Therefore, the forearm's angle relative to the stational base is q_s + q_e.
+
+At the L shaped startup:
+
+$$
+q_{s} = 90^\circ
+$$
+
+$$
+q_{e} = -90^\circ
+$$
+
+### First attempt
+My first model just took the link lengths and plugged them into equations for the x and z coordinate.
+
+![Arm link lengths](../assets/projects/rover/arm_link_drawing.PNG)
+
+$$
+L_{1} = 0.47m
+$$
+
+$$
+L_{2} = 0.67m
+$$
+
+$$
+x = L_{1}cos(q_{s}) + L_{2}cos(q_{s} + q_{e})
+$$
+
+$$
+z = L_{1}sin(q_{s}) + L_{2}sin(q_{s} + q_{e})
+$$
+
+The prismatic joint makes the y coordinate easy, so I didn't touch the y at all.
+
+So with this setup I had made two assumptions that may or may not have been true lol
+1. The elbow-to-wrist displacement lay entirely along the forearm’s reference direction.
+2. After correcting encoder signs and zeros, motor readings equaled physical joint angles:
+
+$$
+q_{s} = \theta_{s}
+$$
+
+$$
+q_{e} = \theta_{e}
+$$
+
+The second assumption meant I could send the IK elbow angle directly to the elbow motor.
+
+### Problem with model
+For testing, we clamped the robot on its side with a mat under it and taped a pencil on the end of the forearm:
+
+![IK testing setup](../assets/projects/rover/ik_testing_setup.png)
+
+When I commanded the zero position in cartesion coordinates at (0.46, 0.47) it worked fine. So I was like yay amazing and then I continued testing and it was less amazing.
+
+I commanded:
+$$
+(x, z) = (0.46, 0.24)m
+$$
+
+but measured:
+
+$$
+(x, z) = (0.5235, 0.267)m
+$$
+
+6.35 cm too far outward and 2.7 cm too high. The software reported no FK error, which meant the angles calculated by IK reproduced the target when passed through my own FK equations, which tells us nothing because they were both mine.
+
+### My realization that should've come sooner
+
+Now because of my experience with my [Tomato Robot Arm](tomato.html), I had assumed the representations of the joints would be as simple as it was for that arm. The difference is where the joint motor is mounted. For this rover arm, the elbow motor is at the baes of the robot and drives the elbow joint through linkage transmission. Therefore, the difference between movement of the shoulder for these two arms on the elbow angle is shown below:
+
+![Elbow motor vs joint angle](../assets/projects/rover/elbow_sim.html)
+
+### New model
+My new model for the joints separates motor joints from the physical joint angles. The shoulder is unchanged:
+
+$$
+q_{s} = \theta_{s}
+$$
+
+I started looking at this relationship for the elbow:
+
+$$
+q_{e} = \theta_{e} - \theta_{s} + C
+$$
+
+That means the forearm's absolute orientation is modeled by:
+
+$$
+\beta = \theta_{e} + C
+$$
+
+To summarize, this means the forearm's absolute orientation is only controlled by the elbow motor encoder with some constant offset. However, the physical elbow angle relative to the shoulder arm depends also depends on where the shoulder motor encoder is.
+
+For example, if the shoulder rises 10 degrees while the elbow motor readings stay fixed, the model predicts
+
+1. Forearm absolute orientation stays fixed
+2. Physical elbow angle decreases 10 degrees
+
+### Empirical tests
+Because I have no intuition for motion or physics, I took 30 poses and recorded the measured wrist x and z, and the shoulder and elbow motor readings to find C. After fitting the data, kinematics was working pretty well:
+
+Trying sideways (left) and drawing a 10cmx10cm square (right):
+![IK sideways](../assets/projects/rover/ik_sideways.mov)
+![IK square](../assets/projects/rover/ik_square.mov)
+
+### Summary
+
+There's essentially two parts:
+
+Given an $(x, z)$ input, we first convert it to desired joint angles $(q_{s}, q_{e})$, then convert those into the motor commands $(\theta_{s}, \theta_{e})$:
+
+$$
+(x, z) \xrightarrow{\text{geometric IK}} (q_{s}, q_{e}) \xrightarrow{\text{inverse transmission}} (\theta_{s}, \theta_{e})
+$$
+
+Current transmission model:
+
+$$
+\theta_{s} = q_{s}
+$$
+
+$$
+\theta_{e} = q_{e} + q_{s} - C
+$$
+
+C was derived from 30 calibration points, but it can probably be derived because the link thing is just a parallelogram. Idk we'll see.
 
 ## September 18, 2026
 
