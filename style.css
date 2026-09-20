@@ -1426,12 +1426,39 @@ a.listening-title:hover {
     background: var(--border);
 }
 
+.project-demo-row .project-demo-still {
+    min-width: 0;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--border);
+}
+
+/* A portrait clip beside a still: both boxes share the clip's 9:16 shape and a
+   fixed height, so the video fills its box (no letterboxing) and the photo
+   matches it exactly. */
+.project-demo--pair .project-demo-row {
+    justify-content: flex-start;
+    flex-wrap: wrap;
+}
+
+.project-demo--pair .project-demo-row video,
+.project-demo--pair .project-demo-row .project-demo-still {
+    flex: 0 0 auto;
+    width: auto;
+    max-width: 100%;
+    height: min(520px, 70vh);
+    max-height: none;
+    aspect-ratio: 9 / 16;
+    object-fit: cover;
+}
+
 @media (max-width: 640px) {
     .project-demo-row {
         flex-wrap: wrap;
     }
 
-    .project-demo-row video {
+    .project-demo-row video,
+    .project-demo-row .project-demo-still {
         flex: 1 1 100%;
     }
 }
