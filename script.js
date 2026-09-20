@@ -228,8 +228,10 @@
     return Number.isNaN(time) ? null : time;
   }
 
-  const MILESTONE_ICON = String.fromCodePoint(0x1F345);
-  const MILESTONE_ICON_RE = /^\s*(?:\u2605|\u2606|\u2B50|\uD83C\uDF45)\s*/;
+  const DEFAULT_MILESTONE_ICON = String.fromCodePoint(0x1F345);
+  // A log can override the icon with data-milestone-icon on its .markdown-log element.
+  let MILESTONE_ICON = DEFAULT_MILESTONE_ICON;
+  const MILESTONE_ICON_RE = /^\s*(?:[\u2605\u2606]|\p{Extended_Pictographic}\uFE0F?)\s*/u;
 
   function stripMilestoneIcon(str) {
     return String(str).replace(MILESTONE_ICON_RE, '');
@@ -241,7 +243,7 @@
   }
 
   function parseMilestoneLine(line) {
-    const item = line.trim().match(/^[-*]\s+(?:[\u2605\u2606\u2B50]|\uD83C\uDF45)?\s*(.+)$/);
+    const item = line.trim().match(/^[-*]\s+(?:[\u2605\u2606]|\p{Extended_Pictographic}\uFE0F?)?\s*(.+)$/u);
     if (!item) return null;
     const months = '(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:t(?:ember)?)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)';
     const dateMatch = item[1].trim().match(new RegExp('^(' + months + '\\s+\\d{1,2},\\s+\\d{4})(?:\\s*(?:\\u2014|\\u2013|--|-|:)\\s*(.*))?$', 'i'));
@@ -465,6 +467,7 @@
           return response.text();
         })
         .then(function (markdown) {
+          MILESTONE_ICON = el.dataset.milestoneIcon || DEFAULT_MILESTONE_ICON;
           el.innerHTML = renderMarkdownLog(markdown);
           initLogVideos(el);
           typesetMath(el);

@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="robots" content="index, follow" />
+        <meta name="description" content="" />
+        <link rel="canonical" href="https://annsong.me/projects/rover.html" />
+        <meta property="og:type" content="website" />
+        <meta property="og:site_name" content="Ann Song" />
+        <meta property="og:title" content="Mars Rover - Ann Song" />
+        <meta property="og:description" content="" />
+        <meta property="og:url" content="https://annsong.me/projects/rover.html" />
+        <!-- <meta property="og:image" content="https://annsong.me/assets/projects/rover/thumbnail_card.jpg" /> -->
+        <meta name="twitter:card" content="summary_large_image" />
+        <title>Mars Rover - Ann Song</title>
+        <link rel="stylesheet" href="../style.css" />
+        <script>
+            window.MathJax = {
+                tex: {
+                    inlineMath: [['$', '$'], ['\\(', '\\)']],
+                    displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                    processEscapes: true
+                },
+                options: {
+                    skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+                },
+                startup: {
+                    typeset: false
+                }
+            };
+        </script>
+        <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+        <script type="module" src="https://cdn.jsdelivr.net/npm/@google/model-viewer@4.0.0/dist/model-viewer.min.js"></script>
+        <script src="../script.js"></script>
+        <script data-goatcounter="https://annsong.goatcounter.com/count"
+                async src="//gc.zgo.at/count.js"></script>
+    </head>
+    <body>
+        <div class="container">
+            <nav id="site-nav"></nav>
+
+            <h1>Mars Rover</h1>
+            <p>
+                <!-- One or two sentences on what the rover is. -->
+            </p>
+
+            <!-- <div class="project-links">[<a href="#">GitHub</a>]</div> -->
+            <div class="project-tech project-tech--detail">
+                <span>Robotics</span>
+                <span>Computer Vision</span>
+                <span>ROS 2</span>
+                <span>Python</span>
+            </div>
+
+            <div class="project-guide" aria-label="Guide to the project tabs">
+                <p>
+                    Destination and journey
+                </p>
+                <svg class="project-guide-arrows" viewBox="0 0 620 96" aria-hidden="true">
+                    <defs>
+                        <marker id="guide-arrowhead" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto">
+                            <path d="M0,0 L8,4.5 L0,9" />
+                        </marker>
+                    </defs>
+                    <path class="guide-arrow guide-arrow-final" d="M240 16 C200 32, 165 56, 142 84" />
+                    <path class="guide-arrow guide-arrow-log" d="M380 16 C420 32, 455 56, 478 84" />
+                </svg>
+            </div>
+
+            <div class="project-tabs" role="tablist" aria-label="Rover project sections">
+                <button class="project-tab active" type="button" role="tab" aria-selected="true" aria-controls="rover-final" data-tab="rover-final">
+                    Current System
+                </button>
+                <button class="project-tab" type="button" role="tab" aria-selected="false" aria-controls="rover-process" data-tab="rover-process">
+                    Log
+                </button>
+            </div>
+
+            <section class="tab-panel active" id="rover-final" role="tabpanel">
+                <!-- <nav class="section-jump" aria-label="Jump to a section">
+                    <a class="section-jump-primary" href="#rover-demo">
+                        <span class="section-jump-play" aria-hidden="true"></span>
+                        Watch the demo
+                    </a>
+                    <a href="#rover-cad">System Overview</a>
+                </nav> -->
+
+                <!-- <h2 id="rover-demo">Demo</h2>
+                <figure class="project-demo">
+                    <div class="project-demo-row">
+                        <video src="../assets/projects/rover/demo.mp4#t=0.001" controls playsinline preload="metadata"></video>
+                    </div>
+                    <figcaption></figcaption>
+                </figure>
+
+                <hr /> -->
+
+                <h2 id="rover-cad">System Overview</h2>
+                <p>
+                    Work in progress. Check the log for updates.
+                </p>
+
+                <!-- <div class="project-cad-panel">
+                    <div class="project-cad-row">
+                    <figure class="project-cad">
+                        <model-viewer
+                            src="../assets/projects/rover/rover.glb"
+                            alt=""
+                            camera-controls
+                            touch-action="pan-y"
+                            auto-rotate
+                            auto-rotate-delay="3000"
+                            rotation-per-second="12deg"
+                            camera-orbit="35deg 72deg 1.6m"
+                            min-camera-orbit="auto auto 0.6m"
+                            max-camera-orbit="auto auto 3.5m"
+                            shadow-intensity="0.8"
+                            shadow-softness="0.8"
+                            exposure="0.65"
+                            tone-mapping="neutral"
+                            environment-image="neutral"
+                            loading="lazy"
+                            reveal="auto">
+                        </model-viewer>
+                        <figcaption></figcaption>
+                    </figure>
+                    </div>
+                    <p class="project-cad-note">Drag to orbit, scroll to zoom, right-drag to pan.</p>
+                </div> -->
+            </section>
+
+            <section class="tab-panel" id="rover-process" role="tabpanel" hidden>
+                <h2>Log</h2>
+                <div class="log-timeline">
+                    <div class="log-timeline-label">Timeline</div>
+                    <button class="log-scroll-btn log-scroll-prev" type="button" aria-label="Scroll timeline left">←</button>
+                    <div class="log-nav"></div>
+                    <button class="log-scroll-btn log-scroll-next" type="button" aria-label="Scroll timeline right">→</button>
+                </div>
+                <div class="markdown-log" data-log-src="rover-log.md" data-milestone-icon="🚀">Loading log...</div>
+            </section>
+
+            <p class="last-edited">Last Updated: September 20, 2026</p>
+        </div>
+    </body>
+</html>

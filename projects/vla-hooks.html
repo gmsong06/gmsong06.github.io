@@ -1,0 +1,635 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="robots" content="index, follow" />
+        <meta name="description" content="A hook-based recording system for understanding what π0-FAST sees, attends to, and considers while controlling a robot." />
+        <link rel="canonical" href="https://annsong.me/projects/vla-hooks.html" />
+        <meta property="og:type" content="article" />
+        <meta property="og:site_name" content="Ann Song" />
+        <meta property="og:title" content="Peeking Inside a Robot Policy - Ann Song" />
+        <meta property="og:description" content="A visual introduction to the hooks I use to inspect π0-FAST while it controls a robot." />
+        <meta property="og:url" content="https://annsong.me/projects/vla-hooks.html" />
+        <meta property="og:image" content="https://annsong.me/assets/projects/vla-hooks/thumbnail.png" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <title>Peeking Inside a Robot Policy - Ann Song</title>
+        <link rel="stylesheet" href="../style.css" />
+        <script src="../script.js"></script>
+        <script data-goatcounter="https://annsong.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+        <style>
+            .vla-intro {
+                max-width: 640px;
+            }
+
+            .vla-intro strong {
+                font-weight: 600;
+            }
+
+            .vla-note {
+                margin: 26px 0 30px;
+                padding: 14px 16px;
+                border-left: 2px solid var(--accent);
+                background: color-mix(in srgb, var(--accent) 7%, transparent);
+                color: var(--muted);
+                font-size: 13px;
+            }
+
+            .vla-note b {
+                color: var(--text);
+            }
+
+            .vla-figure {
+                margin: 20px 0 10px;
+            }
+
+            .vla-map {
+                position: relative;
+                padding: 28px 22px 24px;
+                border: 1px solid var(--border);
+                border-radius: 8px;
+                overflow: hidden;
+            }
+
+            .vla-map::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 3px;
+                height: 100%;
+                background: var(--accent);
+            }
+
+            .vla-flow {
+                display: grid;
+                grid-template-columns: 1.15fr 32px 1fr 32px 1fr 32px .85fr;
+                align-items: center;
+            }
+
+            .vla-box {
+                min-width: 0;
+                text-align: center;
+            }
+
+            .vla-box-title {
+                display: block;
+                margin-bottom: 4px;
+                font-size: 12px;
+                font-weight: 600;
+            }
+
+            .vla-box-sub {
+                display: block;
+                color: var(--muted);
+                font-size: 9px;
+                line-height: 1.4;
+            }
+
+            .vla-arrow {
+                color: var(--muted);
+                text-align: center;
+                font-size: 18px;
+            }
+
+            .vla-cameras {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 4px;
+                margin: 12px auto 9px;
+                max-width: 145px;
+            }
+
+            .vla-camera {
+                position: relative;
+                aspect-ratio: 1;
+                border: 1px solid var(--border);
+                border-radius: 4px;
+                background-image:
+                    linear-gradient(color-mix(in srgb, var(--text) 7%, transparent) 1px, transparent 1px),
+                    linear-gradient(90deg, color-mix(in srgb, var(--text) 7%, transparent) 1px, transparent 1px);
+                background-size: 7px 7px;
+            }
+
+            .vla-camera::after {
+                content: '';
+                position: absolute;
+                width: 10px;
+                height: 7px;
+                border: 1px solid var(--muted);
+                border-radius: 2px;
+                left: 50%;
+                top: 50%;
+                transform: translate(-50%, -50%);
+            }
+
+            .vla-camera:last-child {
+                opacity: .35;
+            }
+
+            .vla-prompt {
+                max-width: 145px;
+                margin: 0 auto;
+                padding: 5px 7px;
+                border-radius: 4px;
+                background: color-mix(in srgb, var(--accent) 9%, transparent);
+                color: var(--muted);
+                font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+                font-size: 8px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            .vla-prefix-bar {
+                display: flex;
+                height: 34px;
+                margin: 14px auto 10px;
+                max-width: 145px;
+                overflow: hidden;
+                border: 1px solid var(--text);
+                border-radius: 4px;
+            }
+
+            .vla-prefix-bar i {
+                flex: 256;
+                border-right: 1px solid var(--bg);
+                background: var(--text);
+                opacity: .78;
+            }
+
+            .vla-prefix-bar i:nth-child(2) { opacity: .62; }
+            .vla-prefix-bar i:nth-child(3) { opacity: .38; }
+            .vla-prefix-bar i:last-child {
+                flex: 48;
+                min-width: 9px;
+                border: 0;
+                background: var(--accent);
+                opacity: 1;
+            }
+
+            .vla-model {
+                position: relative;
+                max-width: 150px;
+                margin: 12px auto 10px;
+                padding: 14px 12px;
+                border: 1px solid var(--text);
+                border-radius: 5px;
+                background: var(--bg);
+            }
+
+            .vla-model-name {
+                font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+                font-size: 13px;
+                font-weight: 600;
+            }
+
+            .vla-layers {
+                display: grid;
+                gap: 2px;
+                margin: 9px 0;
+            }
+
+            .vla-layers i {
+                display: block;
+                height: 2px;
+                background: var(--border);
+            }
+
+            .vla-layers i:nth-child(3),
+            .vla-layers i:nth-child(7),
+            .vla-layers i:nth-child(10) {
+                background: var(--accent);
+            }
+
+            .vla-token-row {
+                display: flex;
+                justify-content: center;
+                gap: 4px;
+                margin: 16px auto 11px;
+            }
+
+            .vla-token-row i {
+                width: 14px;
+                height: 14px;
+                border: 1px solid var(--text);
+                border-radius: 3px;
+            }
+
+            .vla-token-row i:nth-child(2),
+            .vla-token-row i:nth-child(4) {
+                background: color-mix(in srgb, var(--accent) 22%, transparent);
+                border-color: var(--accent-deep);
+            }
+
+            .vla-taps {
+                display: grid;
+                grid-template-columns: repeat(4, 1fr);
+                gap: 7px;
+                margin-top: 25px;
+                padding-top: 17px;
+                border-top: 1px dashed var(--border);
+            }
+
+            .vla-tap {
+                appearance: none;
+                padding: 8px 6px;
+                border: 1px solid var(--border);
+                border-radius: 4px;
+                background: var(--bg);
+                color: var(--muted);
+                font: inherit;
+                font-size: 10px;
+                cursor: pointer;
+                transition: border-color .2s, color .2s, background .2s;
+            }
+
+            .vla-tap:hover,
+            .vla-tap.is-active {
+                border-color: var(--accent);
+                color: var(--text);
+                background: color-mix(in srgb, var(--accent) 8%, transparent);
+            }
+
+            .vla-tap:focus-visible {
+                outline: 2px solid var(--accent);
+                outline-offset: 2px;
+            }
+
+            .vla-readout {
+                display: grid;
+                grid-template-columns: 155px 1fr;
+                gap: 18px;
+                margin-top: 8px;
+                padding: 14px 16px;
+                border: 1px solid var(--border);
+                border-radius: 6px;
+            }
+
+            .vla-readout-name {
+                font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+                font-size: 10px;
+                color: var(--accent-deep);
+                overflow-wrap: anywhere;
+            }
+
+            [data-theme='dark'] .vla-readout-name { color: var(--accent-soft); }
+
+            .vla-readout p {
+                margin: 0;
+                font-size: 12px;
+                color: var(--muted);
+            }
+
+            .vla-caption {
+                margin-top: 8px;
+                color: var(--muted);
+                font-size: 11px;
+                line-height: 1.5;
+            }
+
+            .vla-steps {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 20px;
+                margin: 20px 0 6px;
+            }
+
+            .vla-step {
+                padding-top: 12px;
+                border-top: 1px solid var(--border);
+            }
+
+            .vla-step-num {
+                color: var(--accent);
+                font-size: 11px;
+                font-weight: 600;
+            }
+
+            .vla-step h3 {
+                margin: 5px 0;
+                font-size: 13px;
+            }
+
+            .vla-step p {
+                color: var(--muted);
+                font-size: 12px;
+                line-height: 1.6;
+            }
+
+            .vla-prefix {
+                margin: 18px 0 8px;
+                padding: 18px;
+                border: 1px solid var(--border);
+                border-radius: 6px;
+            }
+
+            .vla-prefix-visual {
+                display: grid;
+                grid-template-columns: repeat(3, 256fr) 48fr;
+                height: 42px;
+                margin: 14px 0 10px;
+                overflow: hidden;
+                border-radius: 4px;
+            }
+
+            .vla-prefix-visual div {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border-right: 1px solid var(--bg);
+                background: color-mix(in srgb, var(--text) 78%, transparent);
+                color: var(--bg);
+                font-size: 8px;
+            }
+
+            .vla-prefix-visual div:nth-child(2) { opacity: .78; }
+            .vla-prefix-visual div:nth-child(3) { opacity: .56; }
+            .vla-prefix-visual div:last-child {
+                min-width: 42px;
+                border: 0;
+                background: var(--accent);
+                color: #111;
+                opacity: 1;
+            }
+
+            .vla-equation {
+                margin: 0;
+                font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+                font-size: 11px;
+                text-align: center;
+                color: var(--muted);
+            }
+
+            .vla-equation b { color: var(--text); }
+
+            .vla-details {
+                margin: 18px 0 28px;
+                border-top: 1px solid var(--border);
+                border-bottom: 1px solid var(--border);
+            }
+
+            .vla-details summary {
+                padding: 13px 2px;
+                cursor: pointer;
+                font-weight: 600;
+                font-size: 12px;
+            }
+
+            .vla-details > div {
+                overflow-x: auto;
+            }
+
+            .vla-hook-table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-bottom: 14px;
+                font-size: 11px;
+            }
+
+            .vla-hook-table th,
+            .vla-hook-table td {
+                padding: 8px 6px;
+                border-top: 1px solid var(--border);
+                text-align: left;
+                vertical-align: top;
+            }
+
+            .vla-hook-table th {
+                color: var(--muted);
+                font-weight: 500;
+            }
+
+            .vla-hook-table td:first-child,
+            .vla-hook-table td:nth-child(2) {
+                font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+                font-size: 10px;
+            }
+
+            .vla-hook-table td:first-child { color: var(--accent-deep); }
+            [data-theme='dark'] .vla-hook-table td:first-child { color: var(--accent-soft); }
+
+            @media (max-width: 680px) {
+                .vla-flow {
+                    grid-template-columns: 1fr;
+                    gap: 10px;
+                }
+
+                .vla-arrow { transform: rotate(90deg); }
+                .vla-box { padding: 7px 0; }
+                .vla-taps { grid-template-columns: repeat(2, 1fr); }
+                .vla-readout { grid-template-columns: 1fr; gap: 5px; }
+                .vla-steps { grid-template-columns: 1fr; gap: 18px; }
+            }
+
+            @media (max-width: 440px) {
+                .vla-map { padding: 22px 14px 18px; }
+                .vla-prefix-visual div { font-size: 0; }
+                .vla-prefix-visual div:last-child { min-width: 20px; }
+                .vla-hook-table th:nth-child(2),
+                .vla-hook-table td:nth-child(2) { display: none; }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <nav id="site-nav"></nav>
+
+            <h1>Peeking Inside a Robot Policy</h1>
+            <p class="vla-intro">
+                I’m working on tools that save useful signals from vision-language-action models while
+                they control a robot. This page shows one of them: <strong>π0‑FAST</strong>.
+            </p>
+
+            <div class="project-tech project-tech--detail">
+                <span>Interpretability</span>
+                <span>Robot Learning</span>
+                <span>JAX</span>
+                <span>π0‑FAST</span>
+            </div>
+
+            <p class="vla-note">
+                <b>The short version:</b> the model normally returns an action and throws away the reasoning
+                signals that produced it. My recorder keeps the useful ones so I can study them later.
+            </p>
+
+            <h2>How one action happens</h2>
+            <p>
+                π0‑FAST takes camera images, a written instruction, and the robot’s current state. It turns
+                them into one long sequence, reasons over that sequence, then writes the next movement as
+                action tokens. The hooks are small observation points along that path.
+            </p>
+
+            <figure class="vla-figure">
+                <div class="vla-map">
+                    <div class="vla-flow" aria-label="Camera views and instruction become a prefix, pass through π0-FAST, and emerge as action tokens">
+                        <div class="vla-box">
+                            <span class="vla-box-title">what the robot gets</span>
+                            <span class="vla-box-sub">camera views + instruction + state</span>
+                            <div class="vla-cameras" aria-hidden="true"><i class="vla-camera"></i><i class="vla-camera"></i><i class="vla-camera"></i></div>
+                            <div class="vla-prompt">“pick up the red mug”</div>
+                        </div>
+                        <div class="vla-arrow" aria-hidden="true">→</div>
+                        <div class="vla-box">
+                            <span class="vla-box-title">one shared sequence</span>
+                            <span class="vla-box-sub">every input gets a position</span>
+                            <div class="vla-prefix-bar" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+                            <span class="vla-box-sub">816 positions</span>
+                        </div>
+                        <div class="vla-arrow" aria-hidden="true">→</div>
+                        <div class="vla-box">
+                            <span class="vla-box-title">the model</span>
+                            <span class="vla-box-sub">information mixes across 18 layers</span>
+                            <div class="vla-model" aria-hidden="true">
+                                <div class="vla-model-name">π0‑FAST</div>
+                                <div class="vla-layers"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+                                <span class="vla-box-sub">Gemma 2B</span>
+                            </div>
+                        </div>
+                        <div class="vla-arrow" aria-hidden="true">→</div>
+                        <div class="vla-box">
+                            <span class="vla-box-title">what comes out</span>
+                            <span class="vla-box-sub">one action token at a time</span>
+                            <div class="vla-token-row" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+                            <span class="vla-box-sub">then robot motion</span>
+                        </div>
+                    </div>
+
+                    <div class="vla-taps" role="group" aria-label="Explore the recorded signals">
+                        <button class="vla-tap is-active" type="button" data-hook="input">what did it see?</button>
+                        <button class="vla-tap" type="button" data-hook="attention">where did it look?</button>
+                        <button class="vla-tap" type="button" data-hook="memory">what did it remember?</button>
+                        <button class="vla-tap" type="button" data-hook="uncertainty">how sure was it?</button>
+                    </div>
+                </div>
+
+                <div class="vla-readout" aria-live="polite">
+                    <span class="vla-readout-name" id="vla-readout-name">observation_input</span>
+                    <p id="vla-readout-copy">The exact camera frames, instruction, and robot state that reached the policy after preprocessing.</p>
+                </div>
+                <figcaption class="vla-caption">Click the questions to see which recorded hook helps answer each one.</figcaption>
+            </figure>
+
+            <hr />
+
+            <h2>The basic idea</h2>
+            <div class="vla-steps">
+                <article class="vla-step">
+                    <span class="vla-step-num">01</span>
+                    <h3>Tap into the forward pass</h3>
+                    <p>Each hook sits at a useful point: before the model, inside its layers, or during action decoding.</p>
+                </article>
+                <article class="vla-step">
+                    <span class="vla-step-num">02</span>
+                    <h3>Record without interfering</h3>
+                    <p>Extra samples use a separate random key, so turning on the recorder does not change the trajectory the robot executes.</p>
+                </article>
+                <article class="vla-step">
+                    <span class="vla-step-num">03</span>
+                    <h3>Analyze after the rollout</h3>
+                    <p>Every inference call becomes one compressed file containing the observation, action, and whichever hooks were enabled.</p>
+                </article>
+            </div>
+
+            <hr />
+
+            <h2>One detail that matters</h2>
+            <p>
+                A lot of the recorded arrays have an axis of length 816. Those positions are not anonymous:
+                they map back to three camera views, then the instruction and robot state. I record those
+                boundaries too, which is what lets an attention signal become a heatmap over a real image.
+            </p>
+
+            <div class="vla-prefix">
+                <div class="vla-prefix-visual" aria-label="The 816 position prefix contains three sets of 256 camera patch tokens and 48 instruction and state tokens">
+                    <div>base camera</div>
+                    <div>left wrist</div>
+                    <div>empty right slot</div>
+                    <div>text + state</div>
+                </div>
+                <p class="vla-equation">256 + 256 + 256 + 48 = <b>816 positions</b></p>
+            </div>
+
+            <p>
+                Each camera contributes a 16 × 16 grid of patches. The third camera slot is empty in LIBERO,
+                but π0‑FAST still reserves and attends to those positions.
+            </p>
+
+            <details class="vla-details">
+                <summary>See all nine hooks and tensor shapes</summary>
+                <div>
+                    <table class="vla-hook-table">
+                        <thead><tr><th>Hook</th><th>Shape</th><th>What I use it for</th></tr></thead>
+                        <tbody>
+                            <tr><td>observation_input</td><td>3 × [B,224,224,3]</td><td>The exact model-ready input</td></tr>
+                            <tr><td>token_spans</td><td>small dictionary</td><td>Mapping positions back to each camera, text, or state</td></tr>
+                            <tr><td>prefix_embeddings</td><td>[B,816,2048]</td><td>How every input is represented before reasoning</td></tr>
+                            <tr><td>prefix_final_hidden_state</td><td>[B,816,2048]</td><td>What the model made of the scene</td></tr>
+                            <tr><td>prefix_gradients</td><td>[B,816,2048]</td><td>Which inputs could most change the first action</td></tr>
+                            <tr><td>raw_attention_weights</td><td>[18,B,8,816]</td><td>Where the first action token looked</td></tr>
+                            <tr><td>value_vectors</td><td>[B,18,816,1,256]</td><td>What information was available at those locations</td></tr>
+                            <tr><td>action_chunks</td><td>[chunks,B,256]</td><td>Other token rollouts the model considered</td></tr>
+                            <tr><td>insight_metrics</td><td>6 × [B,256]</td><td>Confidence and uncertainty during decoding</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </details>
+
+            <h2>Why I’m building this</h2>
+            <p>
+                When a robot fails, the final movement only tells part of the story. These recordings make it
+                possible to ask whether the policy missed the object, misunderstood the instruction, focused
+                on the wrong camera region, or simply became uncertain while decoding the action.
+            </p>
+            <p>
+                The larger goal is to turn those internal signals into useful ways to analyze—and eventually
+                predict—VLA failures.
+            </p>
+
+            <p class="last-edited">Last Updated: September 20, 2026</p>
+        </div>
+
+        <script>
+            (function () {
+                var hooks = {
+                    input: {
+                        name: 'observation_input',
+                        copy: 'The exact camera frames, instruction, and robot state that reached the policy after preprocessing.'
+                    },
+                    attention: {
+                        name: 'raw_attention_weights',
+                        copy: 'For each layer and attention head, this shows which input positions influenced the very first action token.'
+                    },
+                    memory: {
+                        name: 'value_vectors',
+                        copy: 'The content stored at every input position in the model’s memory cache—the information attention could retrieve.'
+                    },
+                    uncertainty: {
+                        name: 'insight_metrics',
+                        copy: 'Entropy, probability, perplexity, and two kinds of uncertainty recorded at every action-token step.'
+                    }
+                };
+
+                var buttons = document.querySelectorAll('.vla-tap');
+                var name = document.getElementById('vla-readout-name');
+                var copy = document.getElementById('vla-readout-copy');
+
+                buttons.forEach(function (button) {
+                    button.addEventListener('click', function () {
+                        var hook = hooks[button.dataset.hook];
+                        if (!hook) return;
+                        buttons.forEach(function (item) {
+                            var active = item === button;
+                            item.classList.toggle('is-active', active);
+                            item.setAttribute('aria-pressed', active ? 'true' : 'false');
+                        });
+                        name.textContent = hook.name;
+                        copy.textContent = hook.copy;
+                    });
+                });
+
+                if (buttons[0]) buttons[0].setAttribute('aria-pressed', 'true');
+            })();
+        </script>
+    </body>
+</html>
