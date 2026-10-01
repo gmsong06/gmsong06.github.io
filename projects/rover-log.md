@@ -28,6 +28,11 @@ data-milestone-icon in rover.html, so the emoji here is optional.
 
 - 🚀 September 18, 2026 - Project start
 
+## September 21, 2026
+
+Basic rviz sim up and running
+![Rviz sim](../assets/projects/rover/rviz_sim.mov)
+
 ## September 20, 2026
 Yesterday I fit the motion transmission model empirically but I lowk don't understand how that worked, so I derived it today with the link geometry.
 
