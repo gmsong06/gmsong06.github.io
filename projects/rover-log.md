@@ -28,6 +28,27 @@ data-milestone-icon in rover.html, so the emoji here is optional.
 
 - 🚀 September 18, 2026 - Project start
 
+## September 27, 2026
+
+Spent today on the keyboard localization task. Basically the keyboard has four ArUco tags glued at its corners. With an overhead camera, we want to see these tags and fuse them into one pose. 
+
+Each tag's own orientation estimate is pretty noisy especially because it's only a 2x2cm marker and it doesn't have enough pixels at any real working distance for its individual rotation reading to be usable. Position should be fine though, so I only use their positions to match against where they're supposed to be on the real keyboard, and solve for the one rigid transform (Kabsch/Umeyama). Basically the position are inputs, but the output of the transform also includes orientation. Three tags is enough, so one obscured isn't too bad. to constrain this; the fourth makes it a real least-squares fit instead of an exact one, which is what lets you catch a bad detection: if the residual blows up with all four visible, something's wrong, and the fit silently gets ignored for that frame instead of publishing it anyway.
+
+
+Tag layout:
+
+| Tag | Corner | Position (m) |
+| --- | --- | --- |
+| 1 | top-left | (-0.01, -0.01) |
+| 2 | bottom-left | (-0.01, 0.145) |
+| 3 | bottom-right | (0.365, 0.145) |
+| 4 | top-right | (0.365, -0.01) |
+
+Keyboard body is 355×135mm (Redragon K552 spec), tags are 2cm and sit flush against the keyboard corners, so each one's center ends up offset by exactly half its own width, outward, diagonally from its corner.
+
+Output is published as an actual tf2 transform (`keyboard` relative to whatever frame the camera's publishing under)
+
+
 ## September 21, 2026
 
 Basic rviz sim up and running
